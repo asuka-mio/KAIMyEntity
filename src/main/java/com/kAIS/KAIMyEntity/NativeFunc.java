@@ -19,7 +19,7 @@ public class NativeFunc
                 if(System.getProperty("os.name").toLowerCase().contains("windows"))
                     System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath()+"\\KAIMyEntitySaba.dll");
                 else if (System.getProperty("os.name").toLowerCase().contains("linux"))
-                    System.load(AndroidRuntimePath+"KAIMyEntitySaba.so");
+                    System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath()+"/KAIMyEntitySaba.dll");
             }
             catch (Throwable e)
             {

@@ -15,7 +15,7 @@ public class KAIMyEntity
 {
     public static final String MODID = "kaimyentity";
     public static final String NAME = "KAIMyEntity";
-    public static final String VERSION = "1.3b12";
+    public static final String VERSION = "2.0.0-crossPlatform";
 
     public static Logger logger;
 
@@ -29,19 +29,12 @@ public class KAIMyEntity
 
         if (event.getSide() == Side.CLIENT)
         {
-            if (false)//Check the version
-            {
-                throw new Exception("Cannot load native library: KAIMyEntitySaba. Version Error. Use the match version of KAIMyEntitySaba.dll.");
-            }
-            else
-            {
-                logger.info("Renderer mode: OpenGL.");
-                RenderTimer.Init();
-                MMDModelManager.Init();
-                MMDTextureManager.Init();
-                MMDAnimManager.Init();
-                KAIMyEntityRegisterClient.Regist();
-            }
+            logger.info("Renderer mode: OpenGL.");
+            RenderTimer.Init();
+            MMDModelManager.Init();
+            MMDTextureManager.Init();
+            MMDAnimManager.Init();
+            KAIMyEntityRegisterClient.Regist();
         }
         else
         {
