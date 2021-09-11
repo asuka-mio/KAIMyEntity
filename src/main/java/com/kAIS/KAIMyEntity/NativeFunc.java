@@ -1,41 +1,37 @@
 package com.kAIS.KAIMyEntity;
 
 import net.minecraft.client.Minecraft;
-import org.lwjgl.Sys;
+import scala.tools.nsc.transform.patmat.Logic;
 
-import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.Locale;
 
 public class NativeFunc
 {
     private static String AndroidRuntimePath = "/data/user/0/com.aof.mcinabox/files/runtime/boat/";
     public static NativeFunc GetInst()
     {
-        if (inst == null)
-        {
-            try
-            {
-                if(System.getProperty("os.name").toLowerCase().contains("windows"))
-                    System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath()+"\\KAIMyEntitySaba.dll");
-                else if (System.getProperty("os.name").toLowerCase().contains("linux"))
-                    System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath()+"/KAIMyEntitySaba.dll");
-            }
-            catch (Throwable e)
-            {
-                KAIMyEntity.logger.info("Cannot load native library at "+Minecraft.getMinecraft().gameDir);
-                KAIMyEntity.logger.info("Are we running on mcinabox?");
-                try{
-                    System.load(AndroidRuntimePath+"KAIMyEntitySaba.so");
+        if (inst == null) {
+            if (System.getProperty("os.name").toLowerCase().contains("windows"))
+                System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath() + "\\KAIMyEntitySaba.dll");//WIN32
+            else {
+                try {
+                    if (System.getProperty("os.name").toLowerCase().contains("linux"))
+                        System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath() + "/KAIMyEntitySaba.so");//Linux
                 }
-                catch (Throwable f) {
-                    KAIMyEntity.logger.info("Cannot load native library at "+AndroidRuntimePath+",terminated.");
-                    throw f;
+                catch (Throwable e) {
+                    KAIMyEntity.logger.info("Cannot load native library at " + Minecraft.getMinecraft().gameDir);
+                    KAIMyEntity.logger.info("Are we running on mcinabox?");
+                    try {
+                        System.load(AndroidRuntimePath + "libc++_shared.so");
+                        System.load(AndroidRuntimePath + "KAIMyEntitySaba.so");//Android
+                    } catch (Throwable f) {
+                        KAIMyEntity.logger.info("Cannot load native library at " + AndroidRuntimePath + ",terminated.");
+                        throw f;
+                    }
                 }
             }
-            inst = new NativeFunc();
         }
-
+        inst = new NativeFunc();
         return inst;
     }
 
