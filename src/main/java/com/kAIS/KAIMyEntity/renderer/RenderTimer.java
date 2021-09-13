@@ -9,7 +9,7 @@ public class RenderTimer
 {
     public static void Init()
     {
-        File log = new File(Minecraft.getMinecraft().gameDir, "KAIMyEntity\\renderTimer.log");
+        File log = new File(Minecraft.getMinecraft().gameDir, "KAIMyEntity/renderTimer.log");
         if (log.exists())
         {
             shouldUse = true;

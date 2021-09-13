@@ -1,40 +1,40 @@
 package com.kAIS.KAIMyEntity;
 
 import net.minecraft.client.Minecraft;
-import scala.tools.nsc.transform.patmat.Logic;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 
 public class NativeFunc
 {
-    private static String AndroidRuntimePath = "/data/user/0/com.aof.mcinabox/files/runtime/boat/";
+    private static String RuntimePath = new File(System.getProperty("java.home")).getParent();
+    private static boolean isAndroid = new File("/system/build.prop").exists();
+    private static boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
+    private static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
     public static NativeFunc GetInst()
     {
         if (inst == null) {
-            if (System.getProperty("os.name").toLowerCase().contains("windows"))
-                System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath() + "\\KAIMyEntitySaba.dll");//WIN32
-            else {
-                try {
-                    if (System.getProperty("os.name").toLowerCase().contains("linux"))
-                        System.load(Minecraft.getMinecraft().gameDir.getAbsolutePath() + "/KAIMyEntitySaba.so");//Linux
-                }
-                catch (Throwable e) {
-                    KAIMyEntity.logger.info("Cannot load native library at " + Minecraft.getMinecraft().gameDir);
-                    KAIMyEntity.logger.info("Are we running on mcinabox?");
-                    try {
-                        System.load(AndroidRuntimePath + "libc++_shared.so");
-                        System.load(AndroidRuntimePath + "KAIMyEntitySaba.so");//Android
-                    } catch (Throwable f) {
-                        KAIMyEntity.logger.info("Cannot load native library at " + AndroidRuntimePath + ",terminated.");
-                        throw f;
-                    }
-                }
-            }
+            inst = new NativeFunc();
+            inst.Init();
         }
-        inst = new NativeFunc();
         return inst;
     }
-
+    private void Init()
+    {
+        if (isWindows) {
+            KAIMyEntity.logger.info("Win32 Env Detected!");
+            System.load(new File(Minecraft.getMinecraft().gameDir.getAbsolutePath(), "KAIMyEntitySaba.dll").getAbsolutePath());//WIN32
+        }
+        if (isLinux && !isAndroid) {
+            KAIMyEntity.logger.info("Linux Env Detected!");
+            System.load(new File(Minecraft.getMinecraft().gameDir.getAbsolutePath() , "KAIMyEntitySaba.so").getAbsolutePath());//Linux
+        }
+        if(isLinux && isAndroid) {
+            KAIMyEntity.logger.info("Android Env Detected!");
+            System.load(new File(RuntimePath , "libc++_shared.so").getAbsolutePath());
+            System.load(new File(RuntimePath , "KAIMyEntitySaba.so").getAbsolutePath());//Android
+        }
+    }
     public native String GetVersion();
     public native byte ReadByte(long data, long pos);
     public native void CopyDataToByteBuffer(ByteBuffer buffer, long data, long pos);
@@ -91,8 +91,4 @@ public class NativeFunc
     public native void DeleteAnimation(long anim);
 
     static NativeFunc inst;
-
-    NativeFunc()
-    {
-    }
 }
