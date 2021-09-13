@@ -1,9 +1,13 @@
 package com.kAIS.KAIMyEntity;
 
 import net.minecraft.client.Minecraft;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.*;
 
 public class NativeFunc
 {
@@ -11,28 +15,98 @@ public class NativeFunc
     private static boolean isAndroid = new File("/system/build.prop").exists();
     private static boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
     private static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
-    public static NativeFunc GetInst()
-    {
+    private static HashMap<runtimeUrlRes,String> urlMap = new HashMap<runtimeUrlRes, String>(){
+        {
+            put(runtimeUrlRes.android_aarch64,"https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/KAIMyEntitySaba.so");
+            put(runtimeUrlRes.android_aarch64_libc,"https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/libc++_shared.so");
+        }
+    };
+    enum runtimeUrlRes{
+        android_aarch64,android_aarch64_libc
+    }
+    private void DownloadSingleFile(URL url,File file) throws IOException {
+        if(file.exists()){
+            try{
+                System.load(file.getAbsolutePath());
+                return; //File exist and loadable
+            }
+            catch (Error e)
+            {
+                KAIMyEntity.logger.info(file.getAbsolutePath()+"broken!Trying recover it!");
+            }
+        }
+        try {
+            file.delete();
+            file.createNewFile();
+            FileUtils.copyURLToFile(url,file,30000,30000);
+            System.load(file.getAbsolutePath());
+        } catch (IOException e) {
+            file.delete();
+            KAIMyEntity.logger.info("Download"+url.getPath()+"failed!");
+            KAIMyEntity.logger.info("Cannot download runtime!");
+            KAIMyEntity.logger.info("Check you internet connection and restart game!");
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    private void DownloadRuntime() throws Exception {
+        if(isWindows)
+        {
+            KAIMyEntity.logger.info("Not support!");
+            throw new Error();
+        }
+        if(isLinux && !isAndroid)
+        {
+            KAIMyEntity.logger.info("Not support!");
+            throw new Error();
+        }
+        if(isLinux && isAndroid)
+        {
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_aarch64_libc)),new File(RuntimePath,"libc++_shared.so"));
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_aarch64)),new File(RuntimePath , "KAIMyEntitySaba.so"));
+        }
+    }
+    public static NativeFunc GetInst(){
         if (inst == null) {
             inst = new NativeFunc();
             inst.Init();
         }
         return inst;
     }
-    private void Init()
+    private void LoadLibrary(File file)
     {
-        if (isWindows) {
-            KAIMyEntity.logger.info("Win32 Env Detected!");
-            System.load(new File(Minecraft.getMinecraft().gameDir.getAbsolutePath(), "KAIMyEntitySaba.dll").getAbsolutePath());//WIN32
+        try {
+            System.load(file.getAbsolutePath());
         }
-        if (isLinux && !isAndroid) {
-            KAIMyEntity.logger.info("Linux Env Detected!");
-            System.load(new File(Minecraft.getMinecraft().gameDir.getAbsolutePath() , "KAIMyEntitySaba.so").getAbsolutePath());//Linux
+        catch (Error e)
+        {
+            KAIMyEntity.logger.info("Runtime"+file.getAbsolutePath()+"not found,try download from github!");
+            throw e;
         }
-        if(isLinux && isAndroid) {
-            KAIMyEntity.logger.info("Android Env Detected!");
-            System.load(new File(RuntimePath , "libc++_shared.so").getAbsolutePath());
-            System.load(new File(RuntimePath , "KAIMyEntitySaba.so").getAbsolutePath());//Android
+    }
+    private void Init(){
+        try {
+            if (isWindows) {
+                KAIMyEntity.logger.info("Win32 Env Detected!");
+                LoadLibrary(new File(Minecraft.getMinecraft().gameDir.getAbsolutePath(), "KAIMyEntitySaba.dll"));//WIN32
+            }
+            if (isLinux && !isAndroid) {
+                KAIMyEntity.logger.info("Linux Env Detected!");
+                LoadLibrary(new File(Minecraft.getMinecraft().gameDir.getAbsolutePath(), "KAIMyEntitySaba.so"));//Linux
+            }
+            if (isLinux && isAndroid) {
+                KAIMyEntity.logger.info("Android Env Detected!");
+                LoadLibrary(new File(RuntimePath, "libc++_shared.so"));
+                LoadLibrary(new File(RuntimePath, "KAIMyEntitySaba.so"));//Android
+            }
+        }
+        catch (Error e)
+        {
+            try {
+                DownloadRuntime();
+            } catch (Exception ex) {
+                throw e;
+            }
         }
     }
     public native String GetVersion();
