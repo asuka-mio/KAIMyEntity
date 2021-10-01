@@ -24,9 +24,8 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
         super(renderManager);
     }
 
-    public static boolean Init(EntityRendererManager renderManager) {
+    public static void Init(EntityRendererManager renderManager) {
         inst = new KAIMyEntityRendererPlayer(renderManager);
-        return true;
     }
 
     public static KAIMyEntityRendererPlayer GetInst() {
@@ -35,7 +34,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
 
     @Override
     public boolean shouldRender(PlayerEntity livingEntityIn, ClippingHelper camera, double camX, double camY, double camZ) {
-        //Update no mattor should render
+        //Update no matter should render
         MMDModelManager.Update();
 
         return super.shouldRender(livingEntityIn, camera, camX, camY, camZ);

@@ -35,11 +35,6 @@ public class MMDTextureManager {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
             int texSize = x * y * (hasAlpha ? 4 : 3);
             ByteBuffer texBuffer = ByteBuffer.allocateDirect(texSize);
-            /*
-            for (int i = 0; i < texSize; ++i)
-                texBuffer.put(nf.ReadByte(texData, i));
-            texBuffer.position(0);
-             */
             nf.CopyDataToByteBuffer(texBuffer, texData, texSize);
             if (hasAlpha) {
                 GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 4);

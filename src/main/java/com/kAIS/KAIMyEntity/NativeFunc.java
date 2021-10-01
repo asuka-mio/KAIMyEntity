@@ -11,14 +11,14 @@ import java.util.HashMap;
 
 public class NativeFunc {
     static NativeFunc inst;
-    private static String RuntimePath = new File(System.getProperty("java.home")).getParent();
-    private static boolean isAndroid = new File("/system/build.prop").exists();
-    private static boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
-    private static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
-    private static HashMap<runtimeUrlRes, String> urlMap = new HashMap<runtimeUrlRes, String>() {
+    private static final String RuntimePath = new File(System.getProperty("java.home")).getParent();
+    private static final boolean isAndroid = new File("/system/build.prop").exists();
+    private static final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
+    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
+    private static final HashMap<runtimeUrlRes, String> urlMap = new HashMap<runtimeUrlRes, String>() {
         {
-            put(runtimeUrlRes.android_aarch64, "https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/KAIMyEntitySaba.so");
-            put(runtimeUrlRes.android_aarch64_libc, "https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/libc++_shared.so");
+            put(runtimeUrlRes.android_arch64, "https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/KAIMyEntitySaba.so");
+            put(runtimeUrlRes.android_arch64_libc, "https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/libc++_shared.so");
         }
     };
 
@@ -64,8 +64,8 @@ public class NativeFunc {
             throw new Error();
         }
         if (isLinux && isAndroid) {
-            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_aarch64_libc)), new File(RuntimePath, "libc++_shared.so"));
-            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_aarch64)), new File(RuntimePath, "KAIMyEntitySaba.so"));
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_arch64_libc)), new File(RuntimePath, "libc++_shared.so"));
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_arch64)), new File(RuntimePath, "KAIMyEntitySaba.so"));
         }
     }
 
@@ -201,6 +201,6 @@ public class NativeFunc {
     public native void DeleteAnimation(long anim);
 
     enum runtimeUrlRes {
-        android_aarch64, android_aarch64_libc
+        android_arch64, android_arch64_libc
     }
 }

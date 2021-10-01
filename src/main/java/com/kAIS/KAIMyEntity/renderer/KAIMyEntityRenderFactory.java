@@ -14,6 +14,6 @@ public class KAIMyEntityRenderFactory<T extends Entity> implements IRenderFactor
 
     @Override
     public EntityRenderer<T> createRenderFor(EntityRendererManager manager) {
-        return new KAIMyEntityRenderer<T>(manager, entityName);
+        return new KAIMyEntityRenderer<>(manager, entityName);
     }
 }

@@ -61,7 +61,7 @@ public class MMDModelManager {
             if (m == null)
                 return null;
 
-            //Regist Animation user because its a new model
+            //Register Animation user because it's a new model
             MMDAnimManager.AddModel(m);
 
             AddModel(entity, m, modelName, isPlayer);
@@ -100,7 +100,7 @@ public class MMDModelManager {
             m.entity = entity;
             m.model = model;
             m.modelName = modelName;
-            m.unuseTime = 0;
+            m.unusedTime = 0;
             m.playerData = pd;
             model.ResetPhysics();
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "idle"), 0);
@@ -110,7 +110,7 @@ public class MMDModelManager {
             m.entity = entity;
             m.model = model;
             m.modelName = modelName;
-            m.unuseTime = 0;
+            m.unusedTime = 0;
             m.state = MMDModelManager.EntityState.Idle;
             model.ResetPhysics();
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "idle"), 0);
@@ -124,8 +124,8 @@ public class MMDModelManager {
 
         List<Entity> waitForDelete = new LinkedList<>();
         for (Model i : models.values()) {
-            i.unuseTime += deltaTime;
-            if (i.unuseTime > 10000) {
+            i.unusedTime += deltaTime;
+            if (i.unusedTime > 10000) {
                 TryModelToPool(i);
                 waitForDelete.add(i.entity);
             }
@@ -143,7 +143,7 @@ public class MMDModelManager {
             for (IMMDModel j : i) {
                 MMDModelOpenGL.Delete((MMDModelOpenGL) j);
 
-                //Unregist animation user
+                //Unregister animation user
                 MMDAnimManager.DeleteModel(j);
             }
         }
@@ -153,7 +153,7 @@ public class MMDModelManager {
     static void DeleteModel(Model model) {
         MMDModelOpenGL.Delete((MMDModelOpenGL) model.model);
 
-        //Unregist animation user
+        //Unregister animation user
         MMDAnimManager.DeleteModel(model.model);
     }
 
@@ -161,11 +161,7 @@ public class MMDModelManager {
         if (modelPool.size() > KAIMyEntityConfig.modelPoolMaxCount.get()) {
             DeleteModel(model);
         } else {
-            Stack<IMMDModel> pool = modelPool.get(model.modelName);
-            if (pool == null) {
-                pool = new Stack<>();
-                modelPool.put(model.modelName, pool);
-            }
+            Stack<IMMDModel> pool = modelPool.computeIfAbsent(model.modelName, k -> new Stack<>());
             pool.push(model.model);
         }
     }
@@ -176,7 +172,7 @@ public class MMDModelManager {
         Entity entity;
         IMMDModel model;
         String modelName;
-        long unuseTime;
+        long unusedTime;
     }
 
     static class ModelWithEntityState extends Model {

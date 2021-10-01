@@ -21,7 +21,7 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
 
     @Override
     public boolean shouldRender(T livingEntityIn, ClippingHelper camera, double camX, double camY, double camZ) {
-        //Update no mattor should render
+        //Update no matter should render
         MMDModelManager.Update();
 
         if (!livingEntityIn.isInRangeToRender3d(camX, camY, camZ)) {
@@ -54,7 +54,7 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
             } else {
                 AnimStateChangeOnce(model, MMDModelManager.EntityState.Idle, "idle");
             }
-            model.unuseTime = 0;
+            model.unusedTime = 0;
             matrixStackIn.push();
             model.model.Render(entityYaw, matrixStackIn.getLast().getMatrix(), packedLightIn);
             matrixStackIn.pop();

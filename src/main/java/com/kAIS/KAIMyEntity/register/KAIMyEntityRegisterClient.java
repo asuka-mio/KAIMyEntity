@@ -33,7 +33,7 @@ public class KAIMyEntityRegisterClient {
     static KeyBinding keyCustomAnim3 = new KeyBinding("key.customAnim3", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_N, "key.title");
     static KeyBinding keyCustomAnim4 = new KeyBinding("key.customAnim4", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_M, "key.title");
 
-    public static void Regist() {
+    public static void Register() {
         ClientRegistry.registerKeyBinding(keyResetPhysics);
         ClientRegistry.registerKeyBinding(keyReloadModels);
         ClientRegistry.registerKeyBinding(keyCustomAnim1);
@@ -50,7 +50,7 @@ public class KAIMyEntityRegisterClient {
                     try {
                         RenderingRegistry.registerEntityRenderingHandler(EntityType.byKey(mcEntityName).get(), new KAIMyEntityRenderFactory<>(mcEntityName));
                     } catch (Exception e) {
-                        KAIMyEntity.logger.info(String.format("Cannot regist entity renderer: %s", mcEntityName));
+                        KAIMyEntity.logger.info(String.format("Cannot register entity renderer: %s", mcEntityName));
                     }
                 }
             }
@@ -60,7 +60,7 @@ public class KAIMyEntityRegisterClient {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onRenderPlayer(RenderPlayerEvent.Pre event) {
-        //Renderer Create time: When 3rd view. If use shader then when world entered.
+        //Renderer Create time: When 3rd view. If you use shader then when world entered.
         //Renderer Render time: WHen 3rd view.
 
         if (event.getEntity() == null)
@@ -80,6 +80,7 @@ public class KAIMyEntityRegisterClient {
         if (keyCustomAnim1.isKeyDown()) {
             if (KAIMyEntityRendererPlayer.GetInst() != null) {
                 KAIMyEntityRendererPlayer.GetInst().CustomAnim(Minecraft.getInstance().player, "1");
+                assert Minecraft.getInstance().player != null;
                 KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, Minecraft.getInstance().player.getUniqueID(), 1));
             }
         }
@@ -89,24 +90,28 @@ public class KAIMyEntityRegisterClient {
         if (keyCustomAnim2.isKeyDown()) {
             if (KAIMyEntityRendererPlayer.GetInst() != null) {
                 KAIMyEntityRendererPlayer.GetInst().CustomAnim(Minecraft.getInstance().player, "2");
+                assert Minecraft.getInstance().player != null;
                 KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, Minecraft.getInstance().player.getUniqueID(), 2));
             }
         }
         if (keyCustomAnim3.isKeyDown()) {
             if (KAIMyEntityRendererPlayer.GetInst() != null) {
                 KAIMyEntityRendererPlayer.GetInst().CustomAnim(Minecraft.getInstance().player, "3");
+                assert Minecraft.getInstance().player != null;
                 KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, Minecraft.getInstance().player.getUniqueID(), 3));
             }
         }
         if (keyCustomAnim4.isKeyDown()) {
             if (KAIMyEntityRendererPlayer.GetInst() != null) {
                 KAIMyEntityRendererPlayer.GetInst().CustomAnim(Minecraft.getInstance().player, "4");
+                assert Minecraft.getInstance().player != null;
                 KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, Minecraft.getInstance().player.getUniqueID(), 4));
             }
         }
         if (keyResetPhysics.isKeyDown()) {
             if (KAIMyEntityRendererPlayer.GetInst() != null) {
                 KAIMyEntityRendererPlayer.GetInst().ResetPhysics(Minecraft.getInstance().player);
+                assert Minecraft.getInstance().player != null;
                 KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(2, Minecraft.getInstance().player.getUniqueID(), 0));
             }
         }

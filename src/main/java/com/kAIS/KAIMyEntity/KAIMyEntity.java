@@ -29,14 +29,14 @@ public class KAIMyEntity {
     public void preInit(FMLCommonSetupEvent event) {
         logger.info("KAIMyEntity preInit begin...");
 
-        KAIMyEntityRegisterCommon.Regist();
+        KAIMyEntityRegisterCommon.Register();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             RenderTimer.Init();
             MMDModelManager.Init();
             MMDTextureManager.Init();
             MMDAnimManager.Init();
-            KAIMyEntityRegisterClient.Regist();
+            KAIMyEntityRegisterClient.Register();
         } else {
             logger.info("KAIMyEntity running on server.");
         }
