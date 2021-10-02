@@ -15,7 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 
-import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
     static KAIMyEntityRendererPlayer inst;
@@ -60,59 +61,51 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
             if (!mwpd.playerData.playCustomAnim) {
                 //Layer 0
                 if (entityIn.getHealth() == 0.0f) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Die, "die");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Die, 0);
                 } else if (entityIn.isElytraFlying()) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.ElytraFly, "elytraFly");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.ElytraFly, 0);
                 } else if (entityIn.isSleeping()) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Sleep, "sleep");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Sleep, 0);
                 } else if (entityIn.isPassenger()) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Ride, "ride");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Ride, 0);
                 } else if (entityIn.isInWater()) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Swim, "swim");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Swim, 0);
                 } else if (entityIn.isOnLadder()) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.OnLadder, "onLadder");
-                } else if (entityIn.getPosY() - entityIn.prevPosY != 0.0f) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Air, "air");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.OnLadder, 0);
                 } else if (entityIn.isSprinting()) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Sprint, "sprint");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Sprint, 0);
                 } else if (entityIn.getPosX() - entityIn.prevPosX != 0.0f || entityIn.getPosZ() - entityIn.prevPosZ != 0.0f) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Walk, "walk");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Walk, 0);
                 } else {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer0.Idle, "idle");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Idle, 0);
                 }
 
                 //Layer 1
                 if (entityIn.isHandActive()) {
                     if (entityIn.getActiveHand() == Hand.MAIN_HAND) {
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item1Right, "1", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), false);
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item2Right, "2", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), false);
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item3Right, "3", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), false);
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item4Right, "4", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), false);
+                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityState.Item1Right, Objects.requireNonNull(entityIn.getActiveItemStack().getItem().getRegistryName()).toString().replace(':', '.'), false);
                     } else {
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item1Left, "1", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), true);
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item2Left, "2", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), true);
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item3Left, "3", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), true);
-                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.Item4Left, "4", entityIn.getActiveItemStack().getItem().getRegistryName().toString().replace(':', '.'), true);
+                        CustomItemActiveAnim(mwpd, MMDModelManager.PlayerData.EntityState.Item1Left, Objects.requireNonNull(entityIn.getActiveItemStack().getItem().getRegistryName()).toString().replace(':', '.'), true);
                     }
                 } else if (entityIn.isSwingInProgress) {
                     if (entityIn.swingingHand == Hand.MAIN_HAND) {
-                        AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.SwingRight, "swingRight");
+                        AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.SwingRight, 1);
                     } else if (entityIn.swingingHand == Hand.OFF_HAND) {
-                        AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer1.SwingLeft, "swingLeft");
+                        AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.SwingLeft, 1);
                     }
                 } else {
-                    if (mwpd.playerData.stateLayer1 != MMDModelManager.PlayerData.EntityStateLayer1.Idle) {
-                        mwpd.playerData.stateLayer1 = MMDModelManager.PlayerData.EntityStateLayer1.Idle;
+                    if (mwpd.playerData.stateLayers[1] != MMDModelManager.PlayerData.EntityState.Idle) {
+                        mwpd.playerData.stateLayers[1] = MMDModelManager.PlayerData.EntityState.Idle;
                         model.ChangeAnim(0, 1);
                     }
                 }
 
                 //Layer 2
                 if (entityIn.isSneaking()) {
-                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityStateLayer2.Sneak, "sneak");
+                    AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Sneak, 2);
                 } else {
-                    if (mwpd.playerData.stateLayer2 != MMDModelManager.PlayerData.EntityStateLayer2.Idle) {
-                        mwpd.playerData.stateLayer2 = MMDModelManager.PlayerData.EntityStateLayer2.Idle;
+                    if (mwpd.playerData.stateLayers[2] != MMDModelManager.PlayerData.EntityState.Idle) {
+                        mwpd.playerData.stateLayers[2] = MMDModelManager.PlayerData.EntityState.Idle;
                         model.ChangeAnim(0, 2);
                     }
                 }
@@ -157,7 +150,6 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
         }
     }
 
-    @Nullable
     @Override
     public ResourceLocation getEntityTexture(PlayerEntity entity) {
         return null;
@@ -168,8 +160,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
         if (m != null) {
             MMDModelManager.ModelWithPlayerData mwpd = (MMDModelManager.ModelWithPlayerData) m;
             IMMDModel model = m.model;
-            mwpd.playerData.stateLayer0 = MMDModelManager.PlayerData.EntityStateLayer0.Idle;
-            mwpd.playerData.stateLayer1 = MMDModelManager.PlayerData.EntityStateLayer1.Idle;
+            Arrays.fill(mwpd.playerData.stateLayers, MMDModelManager.PlayerData.EntityState.Idle);
             mwpd.playerData.playCustomAnim = false;
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "idle"), 0);
             ResetAnimationWithoutLayer0(model);
@@ -188,32 +179,19 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
         }
     }
 
-    void AnimStateChangeOnce(MMDModelManager.ModelWithPlayerData model, MMDModelManager.PlayerData.EntityStateLayer0 targetState, String animName) {
-        if (model.playerData.stateLayer0 != targetState) {
-            model.playerData.stateLayer0 = targetState;
-            model.model.ChangeAnim(MMDAnimManager.GetAnimModel(model.model, animName), 0);
+    void AnimStateChangeOnce(MMDModelManager.ModelWithPlayerData model, MMDModelManager.PlayerData.EntityState targetState, Integer layer) {
+        String Property = MMDModelManager.PlayerData.stateProperty.get(targetState);
+        if (model.playerData.stateLayers[layer] != targetState) {
+            model.playerData.stateLayers[layer] = targetState;
+            model.model.ChangeAnim(MMDAnimManager.GetAnimModel(model.model, Property), layer);
         }
     }
 
-    void AnimStateChangeOnce(MMDModelManager.ModelWithPlayerData model, MMDModelManager.PlayerData.EntityStateLayer1 targetState, String animName) {
-        if (model.playerData.stateLayer1 != targetState) {
-            model.playerData.stateLayer1 = targetState;
-            model.model.ChangeAnim(MMDAnimManager.GetAnimModel(model.model, animName), 1);
-        }
-    }
-
-    void AnimStateChangeOnce(MMDModelManager.ModelWithPlayerData model, MMDModelManager.PlayerData.EntityStateLayer2 targetState, String animName) {
-        if (model.playerData.stateLayer2 != targetState) {
-            model.playerData.stateLayer2 = targetState;
-            model.model.ChangeAnim(MMDAnimManager.GetAnimModel(model.model, animName), 2);
-        }
-    }
-
-    void CustomItemActiveAnim(MMDModelManager.ModelWithPlayerData model, MMDModelManager.PlayerData.EntityStateLayer1 targetState, String id, String itemName, boolean isLeftHand) {
-        long anim = MMDAnimManager.GetAnimModel(model.model, String.format("itemActive_%s_%s_%s", id, itemName, isLeftHand ? "left" : "right"));
+    void CustomItemActiveAnim(MMDModelManager.ModelWithPlayerData model, MMDModelManager.PlayerData.EntityState targetState, String itemName, boolean isLeftHand) {
+        long anim = MMDAnimManager.GetAnimModel(model.model, String.format("itemActive_%s_%s", itemName, isLeftHand ? "left" : "right"));
         if (anim != 0) {
-            if (model.playerData.stateLayer1 != targetState) {
-                model.playerData.stateLayer1 = targetState;
+            if (model.playerData.stateLayers[1] != targetState) {
+                model.playerData.stateLayers[1] = targetState;
                 model.model.ChangeAnim(anim, 1);
             }
         }
@@ -232,27 +210,11 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
         temp |= (nf.ReadByte(data, pos + 3) & 0xff) << 24;
         return Float.intBitsToFloat(temp);
     }
-
     Matrix4f DataToMat(NativeFunc nf, long data) {
-        Matrix4f result = new Matrix4f(new float[]
-                {
-                        DataToFloat(nf, data, 0),
-                        DataToFloat(nf, data, 4),
-                        DataToFloat(nf, data, 8),
-                        DataToFloat(nf, data, 12),
-                        DataToFloat(nf, data, 16),
-                        DataToFloat(nf, data, 20),
-                        DataToFloat(nf, data, 24),
-                        DataToFloat(nf, data, 28),
-                        DataToFloat(nf, data, 32),
-                        DataToFloat(nf, data, 36),
-                        DataToFloat(nf, data, 40),
-                        DataToFloat(nf, data, 44),
-                        DataToFloat(nf, data, 48),
-                        DataToFloat(nf, data, 52),
-                        DataToFloat(nf, data, 56),
-                        DataToFloat(nf, data, 60),
-                });
+        float[] fl = new float[16];
+        for (int i = 0; i < fl.length; i++)
+            fl[i] = DataToFloat(nf, data, i * 4);
+        Matrix4f result = new Matrix4f(fl);
         result.transpose();
         return result;
     }

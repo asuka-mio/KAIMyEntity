@@ -107,7 +107,7 @@ public class MMDModelOpenGL implements IMMDModel {
 
     public void Render(float entityYaw, Matrix4f mat, int packedLight) {
         Update();
-        RenderModel(entityYaw, mat, packedLight);
+        RenderModel(entityYaw, mat);
     }
 
     public void ChangeAnim(long anim, long layer) {
@@ -132,14 +132,14 @@ public class MMDModelOpenGL implements IMMDModel {
         RenderTimer.EndIfUse();
     }
 
-    void RenderModel(float entityYaw, Matrix4f mat, int packedLight) {
+    void RenderModel(float entityYaw, Matrix4f mat) {
         //Depth test disabled by default (1.16.5)
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
         RenderSystem.pushMatrix();
-        //In 1.16.5, base matrix is in matrixstack.
+        //In 1.16.5, base matrix is in matrix's stacks.
         RenderSystem.multMatrix(mat);
         //In 1.16.5, position is applied in base matrix.
         //RenderSystem.translated(x, y, z);
@@ -189,7 +189,7 @@ public class MMDModelOpenGL implements IMMDModel {
                 Minecraft.getInstance().getRenderManager().textureManager.bindTexture(TextureManager.RESOURCE_LOCATION_EMPTY);
             else
                 RenderSystem.bindTexture(mats[materialID].tex);
-            long startPos = nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
+            long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
             GL11.glDrawElements(GL11.GL_TRIANGLES, count, indexType, startPos);
         }

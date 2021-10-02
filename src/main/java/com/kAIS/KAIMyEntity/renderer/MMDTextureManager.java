@@ -11,15 +11,15 @@ import java.util.Map;
 
 public class MMDTextureManager {
     static NativeFunc nf;
-    static Map<String, Texture> texs;
+    static Map<String, Texture> textures;
 
     public static void Init() {
         nf = NativeFunc.GetInst();
-        texs = new HashMap<>();
+        textures = new HashMap<>();
     }
 
     public static Texture GetTexture(String filename) {
-        Texture result = texs.get(filename);
+        Texture result = textures.get(filename);
         if (result == null) {
             long nfTex = nf.LoadTexture(filename);
             if (nfTex == 0) {
@@ -53,16 +53,16 @@ public class MMDTextureManager {
             result = new Texture();
             result.tex = tex;
             result.hasAlpha = hasAlpha;
-            texs.put(filename, result);
+            textures.put(filename, result);
         }
         return result;
     }
 
     public static void DeleteAll() {
-        for (Texture i : texs.values()) {
+        for (Texture i : textures.values()) {
             GL11.glDeleteTextures(i.tex);
         }
-        texs = new HashMap<>();
+        textures = new HashMap<>();
     }
 
     public static class Texture {

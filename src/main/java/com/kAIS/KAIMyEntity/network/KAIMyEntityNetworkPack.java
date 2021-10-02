@@ -52,16 +52,19 @@ public class KAIMyEntityNetworkPack {
 
     public void DoInClient() {
         //Ignore message when player is self.
+        assert Minecraft.getInstance().player != null;
         if (playerUUID.equals(Minecraft.getInstance().player.getUniqueID()))
             return;
         switch (opCode) {
             case 1: {
+                assert Minecraft.getInstance().world != null;
                 PlayerEntity target = Minecraft.getInstance().world.getPlayerByUuid(playerUUID);
                 if (KAIMyEntityRendererPlayer.GetInst() != null && target != null)
                     KAIMyEntityRendererPlayer.GetInst().CustomAnim(target, Integer.toString(arg0));
                 break;
             }
             case 2: {
+                assert Minecraft.getInstance().world != null;
                 PlayerEntity target = Minecraft.getInstance().world.getPlayerByUuid(playerUUID);
                 if (KAIMyEntityRendererPlayer.GetInst() != null && target != null)
                     KAIMyEntityRendererPlayer.GetInst().ResetPhysics(target);

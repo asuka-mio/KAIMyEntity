@@ -9,8 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 
-import javax.annotation.Nullable;
-
 public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
     protected String modelName;
 
@@ -61,7 +59,6 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
         }
     }
 
-    @Nullable
     @Override
     public ResourceLocation getEntityTexture(T entity) {
         return null;

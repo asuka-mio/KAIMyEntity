@@ -88,9 +88,7 @@ public class MMDModelManager {
         if (isPlayer) {
             NativeFunc nf = NativeFunc.GetInst();
             PlayerData pd = new PlayerData();
-            pd.stateLayer0 = PlayerData.EntityStateLayer0.Idle;
-            pd.stateLayer1 = PlayerData.EntityStateLayer1.Idle;
-            pd.stateLayer2 = PlayerData.EntityStateLayer2.Idle;
+            pd.stateLayers = new PlayerData.EntityState[3];
             pd.playCustomAnim = false;
             pd.rightHandMat = nf.CreateMat();
             pd.leftHandMat = nf.CreateMat();
@@ -184,17 +182,26 @@ public class MMDModelManager {
     }
 
     static class PlayerData {
-        EntityStateLayer0 stateLayer0;
-        EntityStateLayer1 stateLayer1;
-        EntityStateLayer2 stateLayer2;
         boolean playCustomAnim; //Custom animation played in layer 0.
         long rightHandMat, leftHandMat;
         ByteBuffer matBuffer;
+        static HashMap<EntityState, String> stateProperty = new HashMap<EntityState, String>() {{
+            put(EntityState.Idle, "idle");
+            put(EntityState.Walk, "walk");
+            put(EntityState.Sprint, "sprint");
+            put(EntityState.Air, "air");
+            put(EntityState.OnLadder, "onLadder");
+            put(EntityState.Swim, "swim");
+            put(EntityState.Ride, "ride");
+            put(EntityState.Sleep, "sleep");
+            put(EntityState.ElytraFly, "elytraFly");
+            put(EntityState.Die, "die");
+            put(EntityState.SwingRight, "swingRight");
+            put(EntityState.SwingLeft, "swingLeft");
+            put(EntityState.Sneak, "sneak");
+        }};
+        EntityState[] stateLayers;
 
-        enum EntityStateLayer0 {Idle, Walk, Sprint, Air, OnLadder, Swim, Ride, Sleep, ElytraFly, Die}
-
-        enum EntityStateLayer1 {Idle, SwingRight, SwingLeft, Item1Right, Item1Left, Item2Right, Item2Left, Item3Right, Item3Left, Item4Right, Item4Left} //Idle means no animation in layer 1.
-
-        enum EntityStateLayer2 {Idle, Sneak} //Idle means no animation.
+        enum EntityState {Idle, Walk, Sprint, Air, OnLadder, Swim, Ride, Sleep, ElytraFly, Die, SwingRight, SwingLeft, Item1Right, Item1Left, Item2Right, Item2Left, Item3Right, Item3Left, Item4Right, Item4Left, Sneak}
     }
 }

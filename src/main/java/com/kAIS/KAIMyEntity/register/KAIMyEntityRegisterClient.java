@@ -34,24 +34,18 @@ public class KAIMyEntityRegisterClient {
     static KeyBinding keyCustomAnim4 = new KeyBinding("key.customAnim4", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_M, "key.title");
 
     public static void Register() {
-        ClientRegistry.registerKeyBinding(keyResetPhysics);
-        ClientRegistry.registerKeyBinding(keyReloadModels);
-        ClientRegistry.registerKeyBinding(keyCustomAnim1);
-        ClientRegistry.registerKeyBinding(keyCustomAnim2);
-        ClientRegistry.registerKeyBinding(keyCustomAnim3);
-        ClientRegistry.registerKeyBinding(keyCustomAnim4);
 
-        File modelDir = new File(Minecraft.getInstance().gameDir, "KAIMyEntity");
-        File[] allDir = modelDir.listFiles();
-        if (allDir != null) {
-            for (File i : allDir) {
+        for (KeyBinding i : new KeyBinding[]{keyCustomAnim1, keyCustomAnim2, keyCustomAnim3, keyCustomAnim4, keyReloadModels, keyResetPhysics})
+            ClientRegistry.registerKeyBinding(i);
+        File[] modelDirs = new File(Minecraft.getInstance().gameDir, "KAIMyEntity").listFiles();
+        if (modelDirs != null) {
+            for (File i : modelDirs) {
                 if (!i.getName().equals("EntityPlayer")) {
                     String mcEntityName = i.getName().replace('.', ':');
-                    try {
+                    if (EntityType.byKey(mcEntityName).isPresent())
                         RenderingRegistry.registerEntityRenderingHandler(EntityType.byKey(mcEntityName).get(), new KAIMyEntityRenderFactory<>(mcEntityName));
-                    } catch (Exception e) {
-                        KAIMyEntity.logger.info(String.format("Cannot register entity renderer: %s", mcEntityName));
-                    }
+                    else
+                        KAIMyEntity.logger.warn(mcEntityName + "not present,ignore rendering it!");
                 }
             }
         }

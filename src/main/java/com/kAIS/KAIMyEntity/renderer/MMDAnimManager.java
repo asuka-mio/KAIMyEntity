@@ -49,11 +49,6 @@ public class MMDAnimManager {
         return result;
     }
 
-    public static void DeleteAll() {
-        for (Long i : animStatic.values())
-            nf.DeleteAnimation(i);
-    }
-
     static String GetAnimationFilename(String modelDir, String animName) {
         File animFilename = new File(modelDir, animName + ".vmd");
         return animFilename.getAbsolutePath();
