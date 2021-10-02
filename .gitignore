@@ -31,5 +31,3 @@ bin/
 # fabric
 
 run/
-
-gradle.properties
