@@ -41,7 +41,7 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
             }
             model.unusedTime = 0;
             matrixStackIn.push();
-            model.model.Render(entityYaw, matrixStackIn.peek().getModel(), packedLightIn);
+            model.model.Render(entityYaw, matrixStackIn, packedLightIn);
             matrixStackIn.pop();
         }
     }

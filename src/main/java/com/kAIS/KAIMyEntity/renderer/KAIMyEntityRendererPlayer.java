@@ -113,7 +113,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
             }
             RenderTimer.EndIfUse();
 
-            model.Render(entityYaw, matrixStackIn.peek().getModel(), light);
+            model.Render(entityYaw, matrixStackIn, light);
 
             //Render item
             RenderTimer.BeginIfUse("KAIMyEntityRendererPlayer: Render item");
@@ -216,7 +216,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
     public Identifier getTexture(PlayerEntity entity) {
         return null;
     }
-    public void rotate(MatrixStack stack,Quaternion quaternion) {
+    public static void rotate(MatrixStack stack,Quaternion quaternion) {
         MatrixStack.Entry matrixstack$entry = stack.peek();
         matrixstack$entry.getModel().multiply(quaternion);
         matrixstack$entry.getNormal().multiply(quaternion);

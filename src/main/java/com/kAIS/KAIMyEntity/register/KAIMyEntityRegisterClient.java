@@ -51,7 +51,7 @@ public class KAIMyEntityRegisterClient {
                 }
             }
         }
-        EntityRendererRegistry.register(EntityType.PLAYER,new KAIMyEntityRenderPlayerFactory<>());
+        EntityRendererRegistry.register(EntityType.PLAYER,new KAIMyEntityRenderPlayerFactory());
     }
 /*
     public static void onRenderPlayer() {
