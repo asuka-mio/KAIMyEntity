@@ -56,7 +56,9 @@ public class MMDModelOpenGL implements IMMDModel {
             indexBuffer.put(nf.ReadByte(indexData, i));
         indexBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL46C.GL_STATIC_DRAW);
-        GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, 0);
+        //GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, 0);
+        //Do not bind buffer 0
+        //it cause crash
         int indexType = switch (indexElementSize) {
             case 1 -> GL46C.GL_UNSIGNED_BYTE;
             case 2 -> GL46C.GL_UNSIGNED_SHORT;
@@ -148,12 +150,13 @@ public class MMDModelOpenGL implements IMMDModel {
 
         //Init vertex pointer
         RenderTimer.BeginIfUse("MMDModelOpenGL: Init vertex pointer");
-        GL46C.glEnableVertexAttribArray(GL46C.GL_VERTEX_ARRAY);
-        GL46C.glVertexAttribPointer(GL46C.GL_VERTEX_ARRAY,posAndNorSize,GL46C.GL_FLOAT,false,0,posBuffer);
-        GL46C.glEnableVertexAttribArray(GL11.GL_NORMAL_ARRAY);
-        GL46C.glVertexAttribPointer(GL11.GL_NORMAL_ARRAY,posAndNorSize,GL46C.GL_FLOAT,false,0,norBuffer);
-        GL46C.glEnableVertexAttribArray(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL46C.glVertexAttribPointer(GL11.GL_TEXTURE_COORD_ARRAY,uvSize,GL46C.GL_FLOAT,false,0,uvBuffer);
+        GL46C.glEnableVertexAttribArray(0);
+        GL46C.glVertexAttribPointer(0,3,GL46C.GL_FLOAT,false,0,posBuffer);
+        GL46C.glEnableVertexAttribArray(1);
+        GL46C.glVertexAttribPointer(1,3,GL46C.GL_FLOAT,false,0,norBuffer);
+        GL46C.glActiveTexture(GL46C.GL_TEXTURE0);
+        GL46C.glEnableVertexAttribArray(2);
+        GL46C.glVertexAttribPointer(2,2,GL46C.GL_FLOAT,false,0,uvBuffer);
 
         RenderTimer.EndIfUse();
 
@@ -181,7 +184,7 @@ public class MMDModelOpenGL implements IMMDModel {
             int count = nf.GetSubMeshVertexCount(model, i);
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
         }
-        GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, 0);
+        //GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, 0);
         RenderTimer.EndIfUse();
 
 
@@ -191,15 +194,16 @@ public class MMDModelOpenGL implements IMMDModel {
             //GL46C.glClientActiveTexture(GL46C.GL_TEXTURE0);
             MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
         }
-        GL46C.glDisableVertexAttribArray(GL11.GL_TEXTURE_COORD_ARRAY);
-        GL46C.glDisableVertexAttribArray(GL11.GL_NORMAL_ARRAY);
-        GL46C.glDisableVertexAttribArray(GL46C.GL_VERTEX_ARRAY);
+        GL46C.glDisableVertexAttribArray(2);
+        GL46C.glDisableVertexAttribArray(1);
+        GL46C.glDisableVertexAttribArray(0);
 
 
         RenderSystem.enableCull();
         deliverStack.pop();
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
+
     }
 
     static class Material {

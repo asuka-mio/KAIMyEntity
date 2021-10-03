@@ -2,8 +2,6 @@ package com.kAIS.KAIMyEntity.renderer;
 
 import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.NativeFunc;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL46C;
 
 import java.nio.ByteBuffer;
@@ -57,6 +55,7 @@ public class MMDTextureManager {
             textures.put(filename, result);
         }
         return result;
+
     }
 
     public static class Texture {

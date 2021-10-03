@@ -26,7 +26,6 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
     @Override
     public void render(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-
         MMDModelManager.Model model = MMDModelManager.GetModelOrInPool(entityIn, modelName, false);
 
         if (model != null) {
@@ -44,6 +43,7 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
             model.model.Render(entityYaw, matrixStackIn, packedLightIn);
             matrixStackIn.pop();
         }
+
     }
 
     @Override
