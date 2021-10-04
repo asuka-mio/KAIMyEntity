@@ -22,9 +22,11 @@ import java.util.Objects;
 
 public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
     static KAIMyEntityRendererPlayer inst;
+    EntityRendererFactory.Context context;
 
     KAIMyEntityRendererPlayer(EntityRendererFactory.Context renderManager) {
         super(renderManager);
+        this.context = renderManager;
     }
 
     public static void Init(EntityRendererFactory.Context renderManager) {
@@ -45,7 +47,6 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
 
     @Override
     public void render(PlayerEntity entityIn, float entityYaw, float tickDelta, MatrixStack matrixStackIn, VertexConsumerProvider vertexConsumers, int light) {
-        super.render(entityIn, entityYaw,tickDelta, matrixStackIn, vertexConsumers, light);
         IMMDModel model = null;
         MMDModelManager.Model m = MMDModelManager.GetModelOrInPool(entityIn, "EntityPlayer_" + entityIn.getName().getString(), true);
         if (m == null)
@@ -113,7 +114,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
             }
             RenderTimer.EndIfUse();
 
-            model.Render(entityYaw, matrixStackIn, light);
+            model.Render(entityYaw, matrixStackIn, light,context);
 
             //Render item
             RenderTimer.BeginIfUse("KAIMyEntityRendererPlayer: Render item");
@@ -138,7 +139,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
             //mat2.multiply(DataToMat(nf, mwpd.playerData.leftHandMat));
             rotate(matrixStackIn,Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
             rotate(matrixStackIn,Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
-            matrixStackIn.scale(10.0f, 10.0f, 10.0f);
+            //matrixStackIn.scale(10.0f, 10.0f, 10.0f);
             MinecraftClient.getInstance().getItemRenderer().renderItem(entityIn,entityIn.getOffHandStack(),ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND,true,matrixStackIn,vertexConsumers,entityIn.world,light,OverlayTexture.DEFAULT_UV,0);
             matrixStackIn.pop();
             RenderTimer.EndIfUse();

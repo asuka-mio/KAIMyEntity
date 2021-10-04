@@ -1,5 +1,6 @@
 package com.kAIS.KAIMyEntity.renderer;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -10,10 +11,12 @@ import net.minecraft.util.Identifier;
 
 public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
     protected String modelName;
+    protected EntityRendererFactory.Context context;
 
     public KAIMyEntityRenderer(EntityRendererFactory.Context renderManager, String modelName) {
         super(renderManager);
         this.modelName = modelName;
+        this.context = renderManager;
     }
 
     @Override
@@ -25,7 +28,6 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
 
     @Override
     public void render(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
-        super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
         MMDModelManager.Model model = MMDModelManager.GetModelOrInPool(entityIn, modelName, false);
 
         if (model != null) {
@@ -39,9 +41,11 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
                 AnimStateChangeOnce(model, MMDModelManager.EntityState.Idle, "idle");
             }
             model.unusedTime = 0;
-            matrixStackIn.push();
-            model.model.Render(entityYaw, matrixStackIn, packedLightIn);
-            matrixStackIn.pop();
+            RenderSystem.getModelViewStack().push();
+            //RenderSystem.getModelViewStack().method_34425(matrixStackIn.peek().getModel());
+            super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+            model.model.Render(entityYaw, matrixStackIn, packedLightIn,context);
+            RenderSystem.getModelViewStack().pop();
         }
 
     }

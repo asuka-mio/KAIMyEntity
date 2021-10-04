@@ -3,15 +3,21 @@ package com.kAIS.KAIMyEntity.renderer;
 import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.NativeFunc;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderCall;
+import com.mojang.blaze3d.systems.RenderCallStorage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.Program;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 public class MMDModelOpenGL implements IMMDModel {
     static NativeFunc nf;
@@ -19,7 +25,11 @@ public class MMDModelOpenGL implements IMMDModel {
     String modelDir;
     int vertexCount;
     ByteBuffer posBuffer, norBuffer, uvBuffer;
+    int vao;
     int ibo;
+    int vbo;
+    int nbo;
+    int ubo;
     int indexElementSize;
     int indexType;
     Material[] mats;
@@ -49,16 +59,19 @@ public class MMDModelOpenGL implements IMMDModel {
         int indexCount = (int) nf.GetIndexCount(model);
         int indexSize = indexCount * indexElementSize;
         long indexData = nf.GetIndices(model);
+        int vao = GL46C.glGenVertexArrays();
+        BufferRenderer.unbindAll();
+        GL46C.glBindVertexArray(vao);
         int ibo = GL46C.glGenBuffers();
+        int vbo = GL46C.glGenBuffers();
+        int nbo = GL46C.glGenBuffers();
+        int ubo = GL46C.glGenBuffers();
         GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, ibo);
         ByteBuffer indexBuffer = ByteBuffer.allocateDirect(indexSize);
         for (int i = 0; i < indexSize; ++i)
             indexBuffer.put(nf.ReadByte(indexData, i));
         indexBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL46C.GL_STATIC_DRAW);
-        //GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, 0);
-        //Do not bind buffer 0
-        //it cause crash
         int indexType = switch (indexElementSize) {
             case 1 -> GL46C.GL_UNSIGNED_BYTE;
             case 2 -> GL46C.GL_UNSIGNED_SHORT;
@@ -88,6 +101,10 @@ public class MMDModelOpenGL implements IMMDModel {
         result.norBuffer = norBuffer;
         result.uvBuffer = uvBuffer;
         result.ibo = ibo;
+        result.vbo = vbo;
+        result.ubo = ubo;
+        result.nbo = nbo;
+        result.vao = vao;
         result.indexElementSize = indexElementSize;
         result.indexType = indexType;
         result.mats = mats;
@@ -98,9 +115,9 @@ public class MMDModelOpenGL implements IMMDModel {
         nf.DeleteModel(model.model);
     }
 
-    public void Render(float entityYaw, MatrixStack mat, int packedLight) {
+    public void Render(float entityYaw, MatrixStack mat, int packedLight, EntityRendererFactory.Context context) {
         Update();
-        RenderModel(entityYaw, mat);
+        RenderModel(entityYaw, mat,context);
     }
 
     public void ChangeAnim(long anim, long layer) {
@@ -125,43 +142,45 @@ public class MMDModelOpenGL implements IMMDModel {
         RenderTimer.EndIfUse();
     }
 
-    void RenderModel(float entityYaw, MatrixStack deliverStack) {
-        RenderSystem.enableDepthTest();
+    void RenderModel(float entityYaw, MatrixStack deliverStack ,EntityRendererFactory.Context context) {
+        int position = 0;
+        int normal = 1;
+        int texcoord = 2;
+        BufferRenderer.unbindAll();
+        GL46C.glBindVertexArray(vao);
+        Shader shader = RenderSystem.getShader();
+        deliverStack.scale(0.1f,0.1f,0.1f);
+        shader.modelViewMat.set(deliverStack.peek().getModel());
         RenderSystem.enableBlend();
+        RenderSystem.enableDepthTest();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        Matrix4f mat4f = deliverStack.peek().getModel();
 
-        deliverStack.push();
-        deliverStack.method_34425(mat4f);
-        KAIMyEntityRendererPlayer.rotate(deliverStack,new Quaternion( 0.0f, 1.0f, 0.0f,-entityYaw));
-        deliverStack.scale(0.1f, 0.1f, 0.1f);
+        GL46C.glEnableVertexAttribArray(position);
+        GL46C.glEnableVertexAttribArray(normal);
+        GL46C.glActiveTexture(GL46C.GL_TEXTURE0);
+        GL46C.glEnableVertexAttribArray(texcoord);
 
-        //Read vertex data
-        RenderTimer.BeginIfUse("MMDModelOpenGL: Read vertex data into Java byte buffer");
+
         int posAndNorSize = vertexCount * 12; //float * 3
         long posData = nf.GetPoss(model);
         nf.CopyDataToByteBuffer(posBuffer, posData, posAndNorSize);
+        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,vbo);
+        posBuffer.position(0);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_STATIC_DRAW);
+        GL46C.glVertexAttribPointer(position,3,GL46C.GL_FLOAT,false,0, 0);
         long norData = nf.GetNormals(model);
         nf.CopyDataToByteBuffer(norBuffer, norData, posAndNorSize);
+        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,nbo);
+        norBuffer.position(0);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,norBuffer,GL46C.GL_STATIC_DRAW);
+        GL46C.glVertexAttribPointer(normal,3,GL46C.GL_FLOAT,true,0, 0);
         int uvSize = vertexCount * 8; //float * 2
         long uvData = nf.GetUVs(model);
         nf.CopyDataToByteBuffer(uvBuffer, uvData, uvSize);
-        RenderTimer.EndIfUse();
-
-        //Init vertex pointer
-        RenderTimer.BeginIfUse("MMDModelOpenGL: Init vertex pointer");
-        GL46C.glEnableVertexAttribArray(0);
-        GL46C.glVertexAttribPointer(0,3,GL46C.GL_FLOAT,false,0,posBuffer);
-        GL46C.glEnableVertexAttribArray(1);
-        GL46C.glVertexAttribPointer(1,3,GL46C.GL_FLOAT,false,0,norBuffer);
-        GL46C.glActiveTexture(GL46C.GL_TEXTURE0);
-        GL46C.glEnableVertexAttribArray(2);
-        GL46C.glVertexAttribPointer(2,2,GL46C.GL_FLOAT,false,0,uvBuffer);
-
-        RenderTimer.EndIfUse();
-
-        //Render
-        RenderTimer.BeginIfUse("MMDModelOpenGL: Do OpenGL draw");
+        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,ubo);
+        uvBuffer.position(0);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_STATIC_DRAW);
+        GL46C.glVertexAttribPointer(texcoord,2,GL46C.GL_FLOAT,false,0, 0);
         GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, ibo);
         long subMeshCount = nf.GetSubMeshCount(model);
         for (long i = 0; i < subMeshCount; ++i) {
@@ -180,30 +199,14 @@ public class MMDModelOpenGL implements IMMDModel {
                 MinecraftClient.getInstance().getEntityRenderDispatcher().textureManager.bindTexture(TextureManager.MISSING_IDENTIFIER);
             else
                 RenderSystem.bindTexture(mats[materialID].tex);
+                GL46C.glBindTexture(GL46C.GL_TEXTURE_2D,mats[materialID].tex);
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
+            shader.bind();
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
+            shader.unbind();
         }
-        //GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, 0);
-        RenderTimer.EndIfUse();
-
-
-        if (false) {
-            //GL46C.glClientActiveTexture(33986); //Texture id from LightTexture
-            //GL46C.glDisableClientState(GL46C.GL_TEXTURE_COORD_ARRAY);
-            //GL46C.glClientActiveTexture(GL46C.GL_TEXTURE0);
-            MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
-        }
-        GL46C.glDisableVertexAttribArray(2);
-        GL46C.glDisableVertexAttribArray(1);
-        GL46C.glDisableVertexAttribArray(0);
-
-
         RenderSystem.enableCull();
-        deliverStack.pop();
-        RenderSystem.disableBlend();
-        RenderSystem.disableDepthTest();
-
     }
 
     static class Material {

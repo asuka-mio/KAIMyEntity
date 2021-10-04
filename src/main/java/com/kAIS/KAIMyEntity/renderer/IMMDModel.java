@@ -1,9 +1,10 @@
 package com.kAIS.KAIMyEntity.renderer;
 
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 
 interface IMMDModel {
-    void Render(float entityYaw, MatrixStack mat, int packedLight);
+    void Render(float entityYaw, MatrixStack mat, int packedLight, EntityRendererFactory.Context context);
 
     void ChangeAnim(long anim, long layer);
 

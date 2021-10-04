@@ -55,7 +55,6 @@ public class MMDTextureManager {
             textures.put(filename, result);
         }
         return result;
-
     }
 
     public static class Texture {

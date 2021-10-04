@@ -2,10 +2,7 @@ package com.kAIS.KAIMyEntity;
 
 import com.kAIS.KAIMyEntity.register.KAIMyEntityRegisterClient;
 //import com.kAIS.KAIMyEntity.register.KAIMyEntityRegisterCommon;
-import com.kAIS.KAIMyEntity.renderer.MMDAnimManager;
-import com.kAIS.KAIMyEntity.renderer.MMDModelManager;
-import com.kAIS.KAIMyEntity.renderer.MMDTextureManager;
-import com.kAIS.KAIMyEntity.renderer.RenderTimer;
+import com.kAIS.KAIMyEntity.renderer.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.launch.FabricClientTweaker;
