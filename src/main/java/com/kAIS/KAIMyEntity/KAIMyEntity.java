@@ -3,9 +3,7 @@ package com.kAIS.KAIMyEntity;
 import com.kAIS.KAIMyEntity.register.KAIMyEntityRegisterClient;
 //import com.kAIS.KAIMyEntity.register.KAIMyEntityRegisterCommon;
 import com.kAIS.KAIMyEntity.renderer.*;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.launch.FabricClientTweaker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

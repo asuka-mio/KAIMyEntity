@@ -1,6 +1,5 @@
 package com.kAIS.KAIMyEntity.renderer;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -41,11 +40,10 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
                 AnimStateChangeOnce(model, MMDModelManager.EntityState.Idle, "idle");
             }
             model.unusedTime = 0;
-            RenderSystem.getModelViewStack().push();
-            //RenderSystem.getModelViewStack().method_34425(matrixStackIn.peek().getModel());
+            matrixStackIn.push();
             super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
             model.model.Render(entityYaw, matrixStackIn, packedLightIn,context);
-            RenderSystem.getModelViewStack().pop();
+            matrixStackIn.pop();
         }
 
     }

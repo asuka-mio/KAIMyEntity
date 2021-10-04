@@ -3,21 +3,15 @@ package com.kAIS.KAIMyEntity.renderer;
 import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.NativeFunc;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderCall;
-import com.mojang.blaze3d.systems.RenderCallStorage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.Program;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Quaternion;
 import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 public class MMDModelOpenGL implements IMMDModel {
     static NativeFunc nf;
@@ -143,13 +137,17 @@ public class MMDModelOpenGL implements IMMDModel {
     }
 
     void RenderModel(float entityYaw, MatrixStack deliverStack ,EntityRendererFactory.Context context) {
-        int position = 0;
-        int normal = 1;
-        int texcoord = 2;
-        BufferRenderer.unbindAll();
-        GL46C.glBindVertexArray(vao);
         Shader shader = RenderSystem.getShader();
-        deliverStack.scale(0.1f,0.1f,0.1f);
+        int position = GL46C.glGetAttribLocation(shader.getProgramRef(),"Position");
+        int normal = GL46C.glGetAttribLocation(shader.getProgramRef(),"Normal");
+        int texcoord = GL46C.glGetAttribLocation(shader.getProgramRef(),"UV0");
+        BufferRenderer.unbindAll();
+
+        GL46C.glBindVertexArray(vao);
+        shader.projectionMat.set(RenderSystem.getProjectionMatrix());
+        shader.colorModulator.set(RenderSystem.getShaderColor());
+
+        deliverStack.scale(0.11f,0.11f,0.11f);
         shader.modelViewMat.set(deliverStack.peek().getModel());
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -157,30 +155,31 @@ public class MMDModelOpenGL implements IMMDModel {
 
         GL46C.glEnableVertexAttribArray(position);
         GL46C.glEnableVertexAttribArray(normal);
-        GL46C.glActiveTexture(GL46C.GL_TEXTURE0);
+        RenderSystem.activeTexture(GL46C.GL_TEXTURE0);
         GL46C.glEnableVertexAttribArray(texcoord);
-
 
         int posAndNorSize = vertexCount * 12; //float * 3
         long posData = nf.GetPoss(model);
         nf.CopyDataToByteBuffer(posBuffer, posData, posAndNorSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,vbo);
         posBuffer.position(0);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_STATIC_DRAW);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_DYNAMIC_DRAW);
         GL46C.glVertexAttribPointer(position,3,GL46C.GL_FLOAT,false,0, 0);
         long norData = nf.GetNormals(model);
         nf.CopyDataToByteBuffer(norBuffer, norData, posAndNorSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,nbo);
         norBuffer.position(0);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,norBuffer,GL46C.GL_STATIC_DRAW);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,norBuffer,GL46C.GL_DYNAMIC_DRAW);
         GL46C.glVertexAttribPointer(normal,3,GL46C.GL_FLOAT,true,0, 0);
         int uvSize = vertexCount * 8; //float * 2
         long uvData = nf.GetUVs(model);
         nf.CopyDataToByteBuffer(uvBuffer, uvData, uvSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,ubo);
         uvBuffer.position(0);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_STATIC_DRAW);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_DYNAMIC_DRAW);
         GL46C.glVertexAttribPointer(texcoord,2,GL46C.GL_FLOAT,false,0, 0);
+
+
         GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, ibo);
         long subMeshCount = nf.GetSubMeshCount(model);
         for (long i = 0; i < subMeshCount; ++i) {
@@ -194,19 +193,19 @@ public class MMDModelOpenGL implements IMMDModel {
             } else {
                 RenderSystem.enableCull();
             }
-
             if (mats[materialID].tex == 0)
                 MinecraftClient.getInstance().getEntityRenderDispatcher().textureManager.bindTexture(TextureManager.MISSING_IDENTIFIER);
             else
                 RenderSystem.bindTexture(mats[materialID].tex);
-                GL46C.glBindTexture(GL46C.GL_TEXTURE_2D,mats[materialID].tex);
+            shader.addSampler("Sampler0",mats[materialID].tex);
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
+            RenderSystem.setupShaderLights(shader);
             shader.bind();
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
             shader.unbind();
         }
-        RenderSystem.enableCull();
+        BufferRenderer.unbindAll();
     }
 
     static class Material {
