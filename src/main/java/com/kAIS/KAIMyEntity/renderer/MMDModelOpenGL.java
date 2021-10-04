@@ -137,6 +137,7 @@ public class MMDModelOpenGL implements IMMDModel {
     }
 
     void RenderModel(float entityYaw, MatrixStack deliverStack ,EntityRendererFactory.Context context) {
+
         Shader shader = RenderSystem.getShader();
         int position = GL46C.glGetAttribLocation(shader.getProgramRef(),"Position");
         int normal = GL46C.glGetAttribLocation(shader.getProgramRef(),"Normal");
@@ -155,7 +156,7 @@ public class MMDModelOpenGL implements IMMDModel {
 
         GL46C.glEnableVertexAttribArray(position);
         GL46C.glEnableVertexAttribArray(normal);
-        RenderSystem.activeTexture(GL46C.GL_TEXTURE0);
+        RenderSystem.activeTexture(GL46C.GL_TEXTURE1);
         GL46C.glEnableVertexAttribArray(texcoord);
 
         int posAndNorSize = vertexCount * 12; //float * 3
@@ -170,7 +171,7 @@ public class MMDModelOpenGL implements IMMDModel {
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,nbo);
         norBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,norBuffer,GL46C.GL_DYNAMIC_DRAW);
-        GL46C.glVertexAttribPointer(normal,3,GL46C.GL_FLOAT,true,0, 0);
+        GL46C.glVertexAttribPointer(normal,3,GL46C.GL_FLOAT,false,0, 0);
         int uvSize = vertexCount * 8; //float * 2
         long uvData = nf.GetUVs(model);
         nf.CopyDataToByteBuffer(uvBuffer, uvData, uvSize);
@@ -196,12 +197,13 @@ public class MMDModelOpenGL implements IMMDModel {
             if (mats[materialID].tex == 0)
                 MinecraftClient.getInstance().getEntityRenderDispatcher().textureManager.bindTexture(TextureManager.MISSING_IDENTIFIER);
             else
-                RenderSystem.bindTexture(mats[materialID].tex);
-            shader.addSampler("Sampler0",mats[materialID].tex);
+                GL46C.glBindTexture(GL46C.GL_TEXTURE_2D,mats[materialID].tex);
+            //shader.addSampler("Sampler0",mats[materialID].tex);
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
             RenderSystem.setupShaderLights(shader);
             shader.bind();
+            GL46C.glUniform1i(GL46C.glGetUniformLocation(shader.getProgramRef(),"Sampler0"),1);
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
             shader.unbind();
         }
