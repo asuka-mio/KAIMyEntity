@@ -1,5 +1,6 @@
 package com.kAIS.KAIMyEntity.renderer;
 
+import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.NativeFunc;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Frustum;
@@ -29,10 +30,6 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
         this.context = renderManager;
     }
 
-    public static void Init(EntityRendererFactory.Context renderManager) {
-        inst = new KAIMyEntityRendererPlayer(renderManager);
-    }
-
     public static KAIMyEntityRendererPlayer GetInst() {
         return inst;
     }
@@ -47,6 +44,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
 
     @Override
     public void render(PlayerEntity entityIn, float entityYaw, float tickDelta, MatrixStack matrixStackIn, VertexConsumerProvider vertexConsumers, int light) {
+        KAIMyEntity.logger.info("render");
         IMMDModel model = null;
         MMDModelManager.Model m = MMDModelManager.GetModelOrInPool(entityIn, "EntityPlayer_" + entityIn.getName().getString(), true);
         if (m == null)
@@ -114,7 +112,7 @@ public class KAIMyEntityRendererPlayer extends EntityRenderer<PlayerEntity> {
             }
             RenderTimer.EndIfUse();
 
-            model.Render(entityYaw, matrixStackIn, light,context);
+            model.Render(entityYaw, matrixStackIn, light);
 
             //Render item
             RenderTimer.BeginIfUse("KAIMyEntityRendererPlayer: Render item");

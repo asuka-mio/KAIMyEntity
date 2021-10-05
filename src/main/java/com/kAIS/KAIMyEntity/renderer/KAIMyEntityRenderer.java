@@ -42,7 +42,7 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
             model.unusedTime = 0;
             matrixStackIn.push();
             super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-            model.model.Render(entityYaw, matrixStackIn, packedLightIn,context);
+            model.model.Render(entityYaw, matrixStackIn, packedLightIn);
             matrixStackIn.pop();
         }
 

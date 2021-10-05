@@ -2,7 +2,6 @@ package com.kAIS.KAIMyEntity.register;
 
 import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRenderFactory;
-import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRenderPlayerFactory;
 import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRendererPlayer;
 import com.kAIS.KAIMyEntity.renderer.MMDModelManager;
 import net.fabricmc.api.EnvType;
@@ -51,7 +50,6 @@ public class KAIMyEntityRegisterClient {
                 }
             }
         }
-        EntityRendererRegistry.register(EntityType.PLAYER,new KAIMyEntityRenderPlayerFactory());
     }
 /*
     public static void onRenderPlayer() {

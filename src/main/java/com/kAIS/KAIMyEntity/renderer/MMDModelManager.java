@@ -167,9 +167,9 @@ public class MMDModelManager {
 
     enum EntityState {Idle, Walk, Swim, Ridden}
 
-    static class Model {
+    public static class Model {
         Entity entity;
-        IMMDModel model;
+        public IMMDModel model;
         String modelName;
         long unusedTime;
     }
@@ -178,15 +178,15 @@ public class MMDModelManager {
         EntityState state;
     }
 
-    static class ModelWithPlayerData extends Model {
-        PlayerData playerData;
+    public static class ModelWithPlayerData extends Model {
+        public PlayerData playerData;
     }
 
-    static class PlayerData {
-        boolean playCustomAnim; //Custom animation played in layer 0.
-        long rightHandMat, leftHandMat;
+    public static class PlayerData {
+        public boolean playCustomAnim; //Custom animation played in layer 0.
+        public long rightHandMat, leftHandMat;
         ByteBuffer matBuffer;
-        static HashMap<EntityState, String> stateProperty = new HashMap<>() {{
+        public static HashMap<EntityState, String> stateProperty = new HashMap<>() {{
             put(EntityState.Idle, "idle");
             put(EntityState.Walk, "walk");
             put(EntityState.Sprint, "sprint");
@@ -201,8 +201,8 @@ public class MMDModelManager {
             put(EntityState.SwingLeft, "swingLeft");
             put(EntityState.Sneak, "sneak");
         }};
-        EntityState[] stateLayers;
+        public EntityState[] stateLayers;
 
-        enum EntityState {Idle, Walk, Sprint, Air, OnLadder, Swim, Ride, Sleep, ElytraFly, Die, SwingRight, SwingLeft, ItemRight, ItemLeft, Sneak}
+        public enum EntityState {Idle, Walk, Sprint, Air, OnLadder, Swim, Ride, Sleep, ElytraFly, Die, SwingRight, SwingLeft, ItemRight, ItemLeft, Sneak}
     }
 }

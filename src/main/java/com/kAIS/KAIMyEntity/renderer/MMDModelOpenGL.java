@@ -6,7 +6,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.opengl.*;
@@ -113,9 +112,9 @@ public class MMDModelOpenGL implements IMMDModel {
         nf.DeleteModel(model.model);
     }
 
-    public void Render(float entityYaw, MatrixStack mat, int packedLight, EntityRendererFactory.Context context) {
+    public void Render(float entityYaw, MatrixStack mat, int packedLight) {
         Update();
-        RenderModel(entityYaw, mat,context);
+        RenderModel(entityYaw, mat);
     }
 
     public void ChangeAnim(long anim, long layer) {
@@ -140,7 +139,7 @@ public class MMDModelOpenGL implements IMMDModel {
         RenderTimer.EndIfUse();
     }
 
-    void RenderModel(float entityYaw, MatrixStack deliverStack ,EntityRendererFactory.Context context) {
+    void RenderModel(float entityYaw, MatrixStack deliverStack ) {
         ShaderProvider.Init();
         int mmdProgram = ShaderProvider.getProgram();
 
@@ -156,7 +155,7 @@ public class MMDModelOpenGL implements IMMDModel {
 
         shader.projectionMat.set(RenderSystem.getProjectionMatrix());
         shader.colorModulator.set(RenderSystem.getShaderColor());
-        deliverStack.scale(0.11f,0.11f,0.11f);
+        deliverStack.scale(0.09f,0.09f,0.09f);
         shader.modelViewMat.set(deliverStack.peek().getModel());
         FloatBuffer modelViewMatBuff = shader.modelViewMat.getFloatData();
         FloatBuffer projViewMatBuff = shader.projectionMat.getFloatData();
@@ -166,7 +165,7 @@ public class MMDModelOpenGL implements IMMDModel {
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
         GL46C.glEnableVertexAttribArray(position);
-        GL46C.glEnableVertexAttribArray(normal);
+        //GL46C.glEnableVertexAttribArray(normal);
         RenderSystem.activeTexture(GL46C.GL_TEXTURE1);
         GL46C.glEnableVertexAttribArray(texcoord);
 
@@ -178,12 +177,15 @@ public class MMDModelOpenGL implements IMMDModel {
         GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_DYNAMIC_DRAW);
         GL46C.glVertexAttribPointer(position,3,GL46C.GL_FLOAT,false,0, 0);
 
+        /*
         long norData = nf.GetNormals(model);
         nf.CopyDataToByteBuffer(norBuffer, norData, posAndNorSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,nbo);
         norBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,norBuffer,GL46C.GL_DYNAMIC_DRAW);
         GL46C.glVertexAttribPointer(normal,3,GL46C.GL_FLOAT,false,0, 0);
+
+         */
 
         int uvSize = vertexCount * 8; //float * 2
         long uvData = nf.GetUVs(model);
@@ -213,7 +215,7 @@ public class MMDModelOpenGL implements IMMDModel {
                 GL46C.glBindTexture(GL46C.GL_TEXTURE_2D,mats[materialID].tex);
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
-            RenderSystem.setupShaderLights(shader);
+            //RenderSystem.setupShaderLights(shader);
 
             GL46C.glUniformMatrix4fv(GL46C.glGetUniformLocation(mmdProgram,"ModelViewMat"),false,modelViewMatBuff);
             GL46C.glUniformMatrix4fv(GL46C.glGetUniformLocation(mmdProgram,"ProjMat"),false,projViewMatBuff);

@@ -6,7 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "KAIMyEntityMixin"
+    "KAIMyEntityPlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
