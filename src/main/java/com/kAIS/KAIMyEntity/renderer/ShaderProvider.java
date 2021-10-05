@@ -47,6 +47,7 @@ public class ShaderProvider {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            isInited = true;
         }
     }
     public static int getProgram(){

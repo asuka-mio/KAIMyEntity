@@ -138,12 +138,9 @@ public class MMDModelOpenGL implements IMMDModel {
     void RenderModel(float entityYaw, MatrixStack deliverStack ) {
         ShaderProvider.Init();
         int mmdProgram = ShaderProvider.getProgram();
-
         Shader shader = RenderSystem.getShader();
-        GL46C.glUseProgram(mmdProgram);
 
         int position = GL46C.glGetAttribLocation(mmdProgram,"Position");
-        int normal = GL46C.glGetAttribLocation(mmdProgram,"Normal");
         int texcoord = GL46C.glGetAttribLocation(mmdProgram,"UV0");
         BufferRenderer.unbindAll();
 
@@ -162,7 +159,6 @@ public class MMDModelOpenGL implements IMMDModel {
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
         GL46C.glEnableVertexAttribArray(position);
-        //GL46C.glEnableVertexAttribArray(normal);
         RenderSystem.activeTexture(GL46C.GL_TEXTURE1);
         GL46C.glEnableVertexAttribArray(texcoord);
 
@@ -171,25 +167,16 @@ public class MMDModelOpenGL implements IMMDModel {
         nf.CopyDataToByteBuffer(posBuffer, posData, posAndNorSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,vbo);
         posBuffer.position(0);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_DYNAMIC_DRAW);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_STATIC_DRAW);
         GL46C.glVertexAttribPointer(position,3,GL46C.GL_FLOAT,false,0, 0);
 
-        /*
-        long norData = nf.GetNormals(model);
-        nf.CopyDataToByteBuffer(norBuffer, norData, posAndNorSize);
-        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,nbo);
-        norBuffer.position(0);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,norBuffer,GL46C.GL_DYNAMIC_DRAW);
-        GL46C.glVertexAttribPointer(normal,3,GL46C.GL_FLOAT,false,0, 0);
-
-         */
 
         int uvSize = vertexCount * 8; //float * 2
         long uvData = nf.GetUVs(model);
         nf.CopyDataToByteBuffer(uvBuffer, uvData, uvSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,ubo);
         uvBuffer.position(0);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_DYNAMIC_DRAW);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_STATIC_DRAW);
         GL46C.glVertexAttribPointer(texcoord,2,GL46C.GL_FLOAT,false,0, 0);
 
 
@@ -212,14 +199,14 @@ public class MMDModelOpenGL implements IMMDModel {
                 GL46C.glBindTexture(GL46C.GL_TEXTURE_2D,mats[materialID].tex);
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
-            //RenderSystem.setupShaderLights(shader);
 
+            GL46C.glUseProgram(mmdProgram);
             GL46C.glUniformMatrix4fv(GL46C.glGetUniformLocation(mmdProgram,"ModelViewMat"),false,modelViewMatBuff);
             GL46C.glUniformMatrix4fv(GL46C.glGetUniformLocation(mmdProgram,"ProjMat"),false,projViewMatBuff);
             GL46C.glUniform1i(GL46C.glGetUniformLocation(mmdProgram,"Sampler0"),1);
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
+            GL46C.glUseProgram(0);
         }
-        GL46C.glUseProgram(0);
         BufferRenderer.unbindAll();
     }
 

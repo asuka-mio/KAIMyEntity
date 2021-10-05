@@ -1,10 +1,7 @@
 package com.kAIS.KAIMyEntity.renderer;
 
 import com.kAIS.KAIMyEntity.NativeFunc;
-import com.kAIS.KAIMyEntity.config.KAIMyEntityConfig;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import org.lwjgl.system.CallbackI;
 
 import java.io.File;
 import java.nio.ByteBuffer;
