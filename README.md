@@ -1,5 +1,6 @@
 ###KAIMyEntity for fabric 1.17.x     
-核心功能已经修好了    
+核心功能已经修好了    ![Screenshot_20211005_230534](https://user-images.githubusercontent.com/43900799/136050088-52fd273c-70de-4832-ad93-72d4024574b5.png)
+
 需要自定义的着色器     
 你需要把release里的两个glsl着色器放到KAIMyEntity里的Shader文件夹里       
 --------------------------      
