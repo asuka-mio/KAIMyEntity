@@ -2,7 +2,7 @@ package com.kAIS.KAIMyEntity.register;
 
 import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRenderFactory;
-import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRendererPlayer;
+import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRendererPlayerHelper;
 import com.kAIS.KAIMyEntity.renderer.MMDModelManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -68,15 +68,15 @@ public class KAIMyEntityRegisterClient {
     }
 */
     public static void onKeyResetPhysicsDown(){
-        if (KAIMyEntityRendererPlayer.GetInst() != null) {
-            KAIMyEntityRendererPlayer.GetInst().ResetPhysics(MinecraftClient.getInstance().player);
+        if (KAIMyEntityRendererPlayerHelper.GetInst() != null) {
+            KAIMyEntityRendererPlayerHelper.GetInst().ResetPhysics(MinecraftClient.getInstance().player);
             assert MinecraftClient.getInstance().player != null;
             //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(2, MinecraftClient.getInstance().player.getUuid(), 0));
         }
     }
     public static void onCustomKeyDown(Integer numOfKey){
-        if (KAIMyEntityRendererPlayer.GetInst() != null) {
-            KAIMyEntityRendererPlayer.GetInst().CustomAnim(MinecraftClient.getInstance().player, numOfKey.toString());
+        if (KAIMyEntityRendererPlayerHelper.GetInst() != null) {
+            KAIMyEntityRendererPlayerHelper.GetInst().CustomAnim(MinecraftClient.getInstance().player, numOfKey.toString());
             assert MinecraftClient.getInstance().player != null;
             //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, MinecraftClient.getInstance().player.getUuid(), numOfKey));
         }

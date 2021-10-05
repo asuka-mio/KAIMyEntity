@@ -24,7 +24,6 @@ public class MMDModelOpenGL implements IMMDModel {
     int vbo;
     int nbo;
     int ubo;
-    int cbo;
     int indexElementSize;
     int indexType;
     Material[] mats;
@@ -61,7 +60,6 @@ public class MMDModelOpenGL implements IMMDModel {
         int vbo = GL46C.glGenBuffers();
         int nbo = GL46C.glGenBuffers();
         int ubo = GL46C.glGenBuffers();
-        int cbo = GL46C.glGenBuffers();
         GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, ibo);
         ByteBuffer indexBuffer = ByteBuffer.allocateDirect(indexSize);
         for (int i = 0; i < indexSize; ++i)
@@ -101,7 +99,6 @@ public class MMDModelOpenGL implements IMMDModel {
         result.ubo = ubo;
         result.nbo = nbo;
         result.vao = vao;
-        result.cbo = cbo;
         result.indexElementSize = indexElementSize;
         result.indexType = indexType;
         result.mats = mats;
@@ -134,9 +131,7 @@ public class MMDModelOpenGL implements IMMDModel {
     }
 
     void Update() {
-        RenderTimer.BeginIfUse("MMDModelOpenGL: Call native function: UpdateModel");
         nf.UpdateModel(model);
-        RenderTimer.EndIfUse();
     }
 
     void RenderModel(float entityYaw, MatrixStack deliverStack ) {

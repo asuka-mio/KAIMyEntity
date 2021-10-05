@@ -4,7 +4,6 @@ import com.kAIS.KAIMyEntity.NativeFunc;
 import com.kAIS.KAIMyEntity.renderer.IMMDModel;
 import com.kAIS.KAIMyEntity.renderer.MMDAnimManager;
 import com.kAIS.KAIMyEntity.renderer.MMDModelManager;
-import com.kAIS.KAIMyEntity.renderer.RenderTimer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -45,9 +44,6 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 		MMDModelManager.ModelWithPlayerData mwpd = (MMDModelManager.ModelWithPlayerData) m;
 
 		if (model != null) {
-			RenderTimer.BeginRecord();
-			RenderTimer.LogIfUse("------RenderPlayer Begin------");
-			RenderTimer.BeginIfUse("KAIMyEntityRendererPlayer: Check animation state");
 			if (!mwpd.playerData.playCustomAnim) {
 				//Layer 0
 				if (entityIn.getHealth() == 0.0f) {
@@ -100,12 +96,9 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 					}
 				}
 			}
-			RenderTimer.EndIfUse();
 
 			model.Render(entityYaw, matrixStackIn, packedLightIn);
 
-			//Render item
-			RenderTimer.BeginIfUse("KAIMyEntityRendererPlayer: Render item");
 			NativeFunc nf = NativeFunc.GetInst();
 			nf.GetRightHandMat(model.GetModelLong(), mwpd.playerData.rightHandMat);
 			matrixStackIn.push();
@@ -130,9 +123,6 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 			//matrixStackIn.scale(10.0f, 10.0f, 10.0f);
 			MinecraftClient.getInstance().getItemRenderer().renderItem(entityIn,entityIn.getOffHandStack(),ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND,true,matrixStackIn,vertexConsumers,entityIn.world,packedLightIn,OverlayTexture.DEFAULT_UV,0);
 			matrixStackIn.pop();
-			RenderTimer.EndIfUse();
-			RenderTimer.LogIfUse("------RenderPlayer End------");
-			RenderTimer.EndRecord();
 		}
 	}
 
