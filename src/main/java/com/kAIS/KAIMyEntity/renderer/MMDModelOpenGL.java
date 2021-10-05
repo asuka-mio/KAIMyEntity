@@ -8,6 +8,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
@@ -150,6 +152,7 @@ public class MMDModelOpenGL implements IMMDModel {
 
         shader.projectionMat.set(RenderSystem.getProjectionMatrix());
         shader.colorModulator.set(RenderSystem.getShaderColor());
+        deliverStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
         deliverStack.scale(0.09f,0.09f,0.09f);
         shader.modelViewMat.set(deliverStack.peek().getModel());
         FloatBuffer modelViewMatBuff = shader.modelViewMat.getFloatData();
