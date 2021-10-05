@@ -1,21 +1,17 @@
 package com.kAIS.KAIMyEntity.renderer;
 
 import net.minecraft.entity.player.PlayerEntity;
-
-import java.util.Arrays;
-
 public class KAIMyEntityRendererPlayerHelper {
 
     KAIMyEntityRendererPlayerHelper() {
     }
 
     public static void ResetPhysics(PlayerEntity player) {
-        MMDModelManager.Model m = MMDModelManager.GetModel(player);
+        MMDModelManager.Model m = MMDModelManager.GetPlayerModel("EntityPlayer_"+player.getName().getString());
+        if (m == null)
+            m = MMDModelManager.GetPlayerModel("EntityPlayer");
         if (m != null) {
-            MMDModelManager.ModelWithPlayerData mwpd = (MMDModelManager.ModelWithPlayerData) m;
             IMMDModel model = m.model;
-            Arrays.fill(mwpd.playerData.stateLayers, MMDModelManager.PlayerData.EntityState.Idle);
-            mwpd.playerData.playCustomAnim = false;
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "idle"), 0);
             ResetAnimationWithoutLayer0(model);
             model.ResetPhysics();
@@ -23,7 +19,9 @@ public class KAIMyEntityRendererPlayerHelper {
     }
 
     public static void CustomAnim(PlayerEntity player, String id) {
-        MMDModelManager.Model m = MMDModelManager.GetModel(player);
+        MMDModelManager.Model m = MMDModelManager.GetPlayerModel("EntityPlayer_"+player.getName().getString());
+        if (m == null)
+            m = MMDModelManager.GetPlayerModel("EntityPlayer");
         if (m != null) {
             MMDModelManager.ModelWithPlayerData mwpd = (MMDModelManager.ModelWithPlayerData) m;
             IMMDModel model = m.model;

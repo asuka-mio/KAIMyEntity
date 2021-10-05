@@ -35,9 +35,9 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 	@Inject(method = "render",at = @At("HEAD"))
 	public void render(AbstractClientPlayerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider vertexConsumers, int packedLightIn, CallbackInfo ci) {
 		IMMDModel model = null;
-		MMDModelManager.Model m = MMDModelManager.GetModelOrInPool(entityIn, "EntityPlayer_" + entityIn.getName().getString(), true);
+		MMDModelManager.Model m = MMDModelManager.GetPlayerModel("EntityPlayer_" + entityIn.getName().getString());
 		if (m == null)
-			m = MMDModelManager.GetModelOrInPool(entityIn, "EntityPlayer", true);
+			m = MMDModelManager.GetPlayerModel("EntityPlayer");
 		if (m != null)
 			model = m.model;
 

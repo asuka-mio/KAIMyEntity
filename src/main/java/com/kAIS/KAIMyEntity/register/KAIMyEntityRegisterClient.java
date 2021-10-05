@@ -51,30 +51,10 @@ public class KAIMyEntityRegisterClient {
             }
         }
     }
-/*
-    public static void onRenderPlayer() {
-        //Renderer Create time: When 3rd view. If you use shader then when world entered.
-        //Renderer Render time: WHen 3rd view.
-
-        if (event.getEntity() == null)
-            return;
-        if (KAIMyEntityRendererPlayer.GetInst() == null) {
-            KAIMyEntityRendererPlayer.Init(event.getRenderer().getRenderManager());
-        }
-        event.setCanceled(true);
-
-        float f = event.getEntity().prevRotationYaw + (event.getEntity().rotationYaw - event.getEntity().prevRotationYaw) * event.getPartialRenderTick();
-        KAIMyEntityRendererPlayer.GetInst().render((PlayerEntity) event.getEntity(), f, event.getPartialRenderTick(), event.getMatrixStack(), event.getBuffers(), event.getLight());
-    }
-*/
     public static void onKeyResetPhysicsDown(){
         KAIMyEntityRendererPlayerHelper.ResetPhysics(MinecraftClient.getInstance().player);
-        assert MinecraftClient.getInstance().player != null;
-        //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(2, MinecraftClient.getInstance().player.getUuid(), 0));
     }
     public static void onCustomKeyDown(Integer numOfKey){
         KAIMyEntityRendererPlayerHelper.CustomAnim(MinecraftClient.getInstance().player, numOfKey.toString());
-        assert MinecraftClient.getInstance().player != null;
-        //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, MinecraftClient.getInstance().player.getUuid(), numOfKey));
     }
 }
