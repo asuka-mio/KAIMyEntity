@@ -68,17 +68,13 @@ public class KAIMyEntityRegisterClient {
     }
 */
     public static void onKeyResetPhysicsDown(){
-        if (KAIMyEntityRendererPlayerHelper.GetInst() != null) {
-            KAIMyEntityRendererPlayerHelper.GetInst().ResetPhysics(MinecraftClient.getInstance().player);
-            assert MinecraftClient.getInstance().player != null;
-            //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(2, MinecraftClient.getInstance().player.getUuid(), 0));
-        }
+        KAIMyEntityRendererPlayerHelper.ResetPhysics(MinecraftClient.getInstance().player);
+        assert MinecraftClient.getInstance().player != null;
+        //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(2, MinecraftClient.getInstance().player.getUuid(), 0));
     }
     public static void onCustomKeyDown(Integer numOfKey){
-        if (KAIMyEntityRendererPlayerHelper.GetInst() != null) {
-            KAIMyEntityRendererPlayerHelper.GetInst().CustomAnim(MinecraftClient.getInstance().player, numOfKey.toString());
-            assert MinecraftClient.getInstance().player != null;
-            //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, MinecraftClient.getInstance().player.getUuid(), numOfKey));
-        }
+        KAIMyEntityRendererPlayerHelper.CustomAnim(MinecraftClient.getInstance().player, numOfKey.toString());
+        assert MinecraftClient.getInstance().player != null;
+        //KAIMyEntityRegisterCommon.channel.sendToServer(new KAIMyEntityNetworkPack(1, MinecraftClient.getInstance().player.getUuid(), numOfKey));
     }
 }
