@@ -9,5 +9,5 @@
 网络通信       
 左右手物品显示           
 linux下nvidia驱动效率问题      
-兼容没有启用光影的sodium&&Iris Shader
+兼容没有启用光影的sodium&&Iris Shader      
 启用光影后模型消失应该是iris把framebuffer改了
