@@ -13,7 +13,6 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -102,25 +101,11 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 			NativeFunc nf = NativeFunc.GetInst();
 			nf.GetRightHandMat(model.GetModelLong(), mwpd.playerData.rightHandMat);
 			matrixStackIn.push();
-			//rotate(matrixStackIn, Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
-			matrixStackIn.scale(0.1f, 0.1f, 0.1f);
-			Matrix4f mat1 = matrixStackIn.peek().getModel();
-			//mat1.multiply(DataToMat(nf, mwpd.playerData.rightHandMat));
-			//rotate(matrixStackIn,Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
-			//rotate(matrixStackIn,Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
-			matrixStackIn.scale(10.0f, 10.0f, 10.0f);
 			MinecraftClient.getInstance().getItemRenderer().renderItem(entityIn, entityIn.getMainHandStack(), ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, false, matrixStackIn,vertexConsumers,entityIn.world,packedLightIn, OverlayTexture.DEFAULT_UV, 0);
 			matrixStackIn.pop();
 
 			nf.GetLeftHandMat(model.GetModelLong(), mwpd.playerData.leftHandMat);
 			matrixStackIn.push();
-			//rotate(matrixStackIn,Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
-			matrixStackIn.scale(0.1f, 0.1f, 0.1f);
-			Matrix4f mat2 = matrixStackIn.peek().getModel();
-			//mat2.multiply(DataToMat(nf, mwpd.playerData.leftHandMat));
-			//rotate(matrixStackIn,Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
-			//rotate(matrixStackIn,Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
-			//matrixStackIn.scale(10.0f, 10.0f, 10.0f);
 			MinecraftClient.getInstance().getItemRenderer().renderItem(entityIn,entityIn.getOffHandStack(),ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND,true,matrixStackIn,vertexConsumers,entityIn.world,packedLightIn,OverlayTexture.DEFAULT_UV,0);
 			matrixStackIn.pop();
 		}

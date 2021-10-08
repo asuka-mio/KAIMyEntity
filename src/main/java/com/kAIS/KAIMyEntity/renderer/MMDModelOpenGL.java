@@ -1,6 +1,6 @@
 package com.kAIS.KAIMyEntity.renderer;
 
-import com.kAIS.KAIMyEntity.KAIMyEntity;
+import com.kAIS.KAIMyEntity.KAIMyEntityClient;
 import com.kAIS.KAIMyEntity.NativeFunc;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -20,18 +20,45 @@ public class MMDModelOpenGL implements IMMDModel {
     String modelDir;
     int vertexCount;
     ByteBuffer posBuffer, norBuffer, uvBuffer;
-    int vao;
-    int ibo;
-    int vbo;
-    int nbo;
-    int ubo;
+
+    int vertexArrayObject;
+    int indexBufferObject;
+    int vertexBufferObject;
+    int normalBufferObject;
+    int texcoordBufferObject;
+
     int indexElementSize;
     int indexType;
+
+    static int shaderProgram;
+    static int positionLocation;
+    static int uvLocation;
+    static int projMatLocation;
+    static int modelViewLocation;
+    static int samplerLocation;
+
+    static boolean isShaderInited;
+
     Material[] mats;
     MMDModelOpenGL() {
 
     }
+    public static void InitShader(){
+        //Init Shader
+        ShaderProvider.Init();
+        shaderProgram = ShaderProvider.getProgram();
+
+        //Init ShaderPropLocation
+        positionLocation = GL46C.glGetAttribLocation(shaderProgram,"Position");
+        uvLocation = GL46C.glGetAttribLocation(shaderProgram,"UV0");
+        projMatLocation = GL46C.glGetUniformLocation(shaderProgram,"ProjMat");
+        modelViewLocation = GL46C.glGetUniformLocation(shaderProgram,"ModelViewMat");
+        samplerLocation = GL46C.glGetUniformLocation(shaderProgram,"Sampler0");
+    }
+
     public static MMDModelOpenGL Create(String modelFilename, String modelDir, boolean isPMD, long layerCount) {
+        if(!isShaderInited)
+            InitShader();
         if (nf == null) nf = NativeFunc.GetInst();
         long model;
         if (isPMD)
@@ -39,7 +66,7 @@ public class MMDModelOpenGL implements IMMDModel {
         else
             model = nf.LoadModelPMX(modelFilename, modelDir, layerCount);
         if (model == 0) {
-            KAIMyEntity.logger.info(String.format("Cannot open model: '%s'.", modelFilename));
+            KAIMyEntityClient.logger.info(String.format("Cannot open model: '%s'.", modelFilename));
             return null;
         }
 
@@ -95,11 +122,11 @@ public class MMDModelOpenGL implements IMMDModel {
         result.posBuffer = posBuffer;
         result.norBuffer = norBuffer;
         result.uvBuffer = uvBuffer;
-        result.ibo = ibo;
-        result.vbo = vbo;
-        result.ubo = ubo;
-        result.nbo = nbo;
-        result.vao = vao;
+        result.indexBufferObject = ibo;
+        result.vertexBufferObject = vbo;
+        result.texcoordBufferObject = ubo;
+        result.normalBufferObject = nbo;
+        result.vertexArrayObject = vao;
         result.indexElementSize = indexElementSize;
         result.indexType = indexType;
         result.mats = mats;
@@ -136,51 +163,45 @@ public class MMDModelOpenGL implements IMMDModel {
     }
 
     void RenderModel(float entityYaw, MatrixStack deliverStack ) {
-        ShaderProvider.Init();
-        int mmdProgram = ShaderProvider.getProgram();
         Shader shader = RenderSystem.getShader();
 
-        int position = GL46C.glGetAttribLocation(mmdProgram,"Position");
-        int texcoord = GL46C.glGetAttribLocation(mmdProgram,"UV0");
         BufferRenderer.unbindAll();
-
-        GL46C.glBindVertexArray(vao);
-
-        shader.projectionMat.set(RenderSystem.getProjectionMatrix());
-        shader.colorModulator.set(RenderSystem.getShaderColor());
-        deliverStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
-        deliverStack.scale(0.09f,0.09f,0.09f);
-        shader.modelViewMat.set(deliverStack.peek().getModel());
-        FloatBuffer modelViewMatBuff = shader.modelViewMat.getFloatData();
-        FloatBuffer projViewMatBuff = shader.projectionMat.getFloatData();
-
+        GL46C.glBindVertexArray(vertexArrayObject);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
-        GL46C.glEnableVertexAttribArray(position);
-        RenderSystem.activeTexture(GL46C.GL_TEXTURE1);
-        GL46C.glEnableVertexAttribArray(texcoord);
+        deliverStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
+        deliverStack.scale(0.09f,0.09f,0.09f);
+        shader.modelViewMat.set(deliverStack.peek().getModel());
+        shader.projectionMat.set(RenderSystem.getProjectionMatrix());
+        FloatBuffer modelViewMatBuff = shader.modelViewMat.getFloatData();
+        FloatBuffer projViewMatBuff = shader.projectionMat.getFloatData();
+
+
+        GL46C.glEnableVertexAttribArray(positionLocation);
+        RenderSystem.activeTexture(GL46C.GL_TEXTURE0);
+        GL46C.glEnableVertexAttribArray(uvLocation);
 
         int posAndNorSize = vertexCount * 12; //float * 3
         long posData = nf.GetPoss(model);
         nf.CopyDataToByteBuffer(posBuffer, posData, posAndNorSize);
-        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,vbo);
+        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER, vertexBufferObject);
         posBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_STATIC_DRAW);
-        GL46C.glVertexAttribPointer(position,3,GL46C.GL_FLOAT,false,0, 0);
+        GL46C.glVertexAttribPointer(positionLocation,3,GL46C.GL_FLOAT,false,0, 0);
 
 
         int uvSize = vertexCount * 8; //float * 2
         long uvData = nf.GetUVs(model);
         nf.CopyDataToByteBuffer(uvBuffer, uvData, uvSize);
-        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER,ubo);
+        GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER, texcoordBufferObject);
         uvBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_STATIC_DRAW);
-        GL46C.glVertexAttribPointer(texcoord,2,GL46C.GL_FLOAT,false,0, 0);
+        GL46C.glVertexAttribPointer(uvLocation,2,GL46C.GL_FLOAT,false,0, 0);
 
 
-        GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, ibo);
+        GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
         long subMeshCount = nf.GetSubMeshCount(model);
         for (long i = 0; i < subMeshCount; ++i) {
             int materialID = nf.GetSubMeshMaterialID(model, i);
@@ -200,10 +221,10 @@ public class MMDModelOpenGL implements IMMDModel {
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
 
-            GL46C.glUseProgram(mmdProgram);
-            GL46C.glUniformMatrix4fv(GL46C.glGetUniformLocation(mmdProgram,"ModelViewMat"),false,modelViewMatBuff);
-            GL46C.glUniformMatrix4fv(GL46C.glGetUniformLocation(mmdProgram,"ProjMat"),false,projViewMatBuff);
-            GL46C.glUniform1i(GL46C.glGetUniformLocation(mmdProgram,"Sampler0"),1);
+            GL46C.glUseProgram(shaderProgram);
+            GL46C.glUniformMatrix4fv(modelViewLocation,false,modelViewMatBuff);
+            GL46C.glUniformMatrix4fv(projMatLocation,false,projViewMatBuff);
+            GL46C.glUniform1i(samplerLocation,0);
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
             GL46C.glUseProgram(0);
         }

@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "KAIMyEntity",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "A forge & fabric mod to replace any entity with MMD models in Minecraft ",
   "authors": [
-    "Me!"
+    "kjkjkAIStudio",
+    "asuka-mio"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/asuka-mio/KAIMyEntity"
   },
 
   "license": "MIT",
@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "com.kAIS.KAIMyEntity.KAIMyEntity"
+    ],
+    "client": [
+      "com.kAIS.KAIMyEntity.KAIMyEntityClient"
     ]
   },
   "mixins": [

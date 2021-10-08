@@ -1,6 +1,6 @@
 package com.kAIS.KAIMyEntity.renderer;
 
-import com.kAIS.KAIMyEntity.KAIMyEntity;
+import com.kAIS.KAIMyEntity.KAIMyEntityClient;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.opengl.GL46C;
 import java.io.FileInputStream;
@@ -24,14 +24,14 @@ public class ShaderProvider {
                 GL46C.glCompileShader(vertexShader);
                 if (GL46C.glGetShaderi(vertexShader, GL46C.GL_COMPILE_STATUS) == GL46C.GL_FALSE) {
                     String log = GL46C.glGetShaderInfoLog(vertexShader, 8192).trim();
-                    KAIMyEntity.logger.error("Failed to compile shader {}", log);
+                    KAIMyEntityClient.logger.error("Failed to compile shader {}", log);
                     GL46C.glDeleteShader(vertexShader);
                 }
 
                 GL46C.glCompileShader(fragShader);
                 if (GL46C.glGetShaderi(fragShader, GL46C.GL_COMPILE_STATUS) == GL46C.GL_FALSE) {
                     String log = GL46C.glGetShaderInfoLog(fragShader, 8192).trim();
-                    KAIMyEntity.logger.error("Failed to compile shader {}", log);
+                    KAIMyEntityClient.logger.error("Failed to compile shader {}", log);
                     GL46C.glDeleteShader(fragShader);
                 }
                 program = GL46C.glCreateProgram();
@@ -40,10 +40,11 @@ public class ShaderProvider {
                 GL46C.glLinkProgram(program);
                 if (GL46C.glGetProgrami(program, GL46C.GL_LINK_STATUS) == GL46C.GL_FALSE) {
                     String log = GL46C.glGetProgramInfoLog(program, 8192);
-                    KAIMyEntity.logger.error("Failed to link shader program\n{}", log);
+                    KAIMyEntityClient.logger.error("Failed to link shader program\n{}", log);
                     GL46C.glDeleteProgram(program);
                     program = 0;
                 }
+                KAIMyEntityClient.logger.info("MMD Shader Initialize finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -36,7 +36,7 @@ public class NativeFunc {
                 System.load(file.getAbsolutePath());
                 return; //File exist and loadable
             } catch (Error e) {
-                KAIMyEntity.logger.info(file.getAbsolutePath() + "broken!Trying recover it!");
+                KAIMyEntityClient.logger.info(file.getAbsolutePath() + "broken!Trying recover it!");
             }
         }
         try {
@@ -46,9 +46,9 @@ public class NativeFunc {
             System.load(file.getAbsolutePath());
         } catch (IOException e) {
             file.delete();
-            KAIMyEntity.logger.info("Download" + url.getPath() + "failed!");
-            KAIMyEntity.logger.info("Cannot download runtime!");
-            KAIMyEntity.logger.info("Check you internet connection and restart game!");
+            KAIMyEntityClient.logger.info("Download" + url.getPath() + "failed!");
+            KAIMyEntityClient.logger.info("Cannot download runtime!");
+            KAIMyEntityClient.logger.info("Check you internet connection and restart game!");
             e.printStackTrace();
             throw e;
         }
@@ -56,11 +56,11 @@ public class NativeFunc {
 
     private void DownloadRuntime() throws Exception {
         if (isWindows) {
-            KAIMyEntity.logger.info("Not support!");
+            KAIMyEntityClient.logger.info("Not support!");
             throw new Error();
         }
         if (isLinux && !isAndroid) {
-            KAIMyEntity.logger.info("Not support!");
+            KAIMyEntityClient.logger.info("Not support!");
             throw new Error();
         }
         if (isLinux && isAndroid) {
@@ -73,7 +73,7 @@ public class NativeFunc {
         try {
             System.load(file.getAbsolutePath());
         } catch (Error e) {
-            KAIMyEntity.logger.info("Runtime" + file.getAbsolutePath() + "not found,try download from github!");
+            KAIMyEntityClient.logger.info("Runtime" + file.getAbsolutePath() + "not found,try download from github!");
             throw e;
         }
     }
@@ -81,15 +81,15 @@ public class NativeFunc {
     private void Init() {
         try {
             if (isWindows) {
-                KAIMyEntity.logger.info("Win32 Env Detected!");
+                KAIMyEntityClient.logger.info("Win32 Env Detected!");
                 LoadLibrary(new File(MinecraftClient.getInstance().runDirectory.getAbsolutePath(), "KAIMyEntitySaba.dll"));//WIN32
             }
             if (isLinux && !isAndroid) {
-                KAIMyEntity.logger.info("Linux Env Detected!");
+                KAIMyEntityClient.logger.info("Linux Env Detected!");
                 LoadLibrary(new File(MinecraftClient.getInstance().runDirectory.getAbsolutePath(), "KAIMyEntitySaba.so"));//Linux
             }
             if (isLinux && isAndroid) {
-                KAIMyEntity.logger.info("Android Env Detected!");
+                KAIMyEntityClient.logger.info("Android Env Detected!");
                 LoadLibrary(new File(RuntimePath, "libc++_shared.so"));
                 LoadLibrary(new File(RuntimePath, "KAIMyEntitySaba.so"));//Android
             }

@@ -1,6 +1,6 @@
 package com.kAIS.KAIMyEntity.register;
 
-import com.kAIS.KAIMyEntity.KAIMyEntity;
+import com.kAIS.KAIMyEntity.KAIMyEntityClient;
 import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRenderFactory;
 import com.kAIS.KAIMyEntity.renderer.KAIMyEntityRendererPlayerHelper;
 import com.kAIS.KAIMyEntity.renderer.MMDModelManager;
@@ -46,7 +46,7 @@ public class KAIMyEntityRegisterClient {
                     if (EntityType.get(mcEntityName).isPresent())
                         EntityRendererRegistry.register(EntityType.get(mcEntityName).get(), new KAIMyEntityRenderFactory<>(mcEntityName));
                     else
-                        KAIMyEntity.logger.warn(mcEntityName + "not present,ignore rendering it!");
+                        KAIMyEntityClient.logger.warn(mcEntityName + "not present,ignore rendering it!");
                 }
             }
         }
