@@ -1,13 +1,19 @@
 package com.kAIS.KAIMyEntity.renderer;
 
+import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.KAIMyEntityClient;
 import com.kAIS.KAIMyEntity.NativeFunc;
+import com.kAIS.KAIMyEntity.dummy.DummyGameRender;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import org.lwjgl.opengl.*;
 
@@ -171,10 +177,14 @@ public class MMDModelOpenGL implements IMMDModel {
         RenderSystem.enableDepthTest();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
+        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+        GameRenderer render = MinecraftClient.getInstance().gameRenderer;
+        Matrix4f mat =  render.getBasicProjectionMatrix(DummyGameRender.getFov(camera,1,true,render));
+
         deliverStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
         deliverStack.scale(0.09f,0.09f,0.09f);
         shader.modelViewMat.set(deliverStack.peek().getModel());
-        shader.projectionMat.set(RenderSystem.getProjectionMatrix());
+        shader.projectionMat.set(mat);
         FloatBuffer modelViewMatBuff = shader.modelViewMat.getFloatData();
         FloatBuffer projViewMatBuff = shader.projectionMat.getFloatData();
 
