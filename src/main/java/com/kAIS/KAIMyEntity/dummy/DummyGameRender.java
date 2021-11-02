@@ -16,7 +16,7 @@ public class DummyGameRender {
             double d = 70.0D;
             if (changingFov) {
                 d = render.getClient().options.fov;
-                d *= (double) MathHelper.lerp(tickDelta, ((GameRenderMixin)render).getlastMovementFovMultiplier(), ((GameRenderMixin)render).getmovementFovMultiplier());
+                d *= MathHelper.lerp(tickDelta, ((GameRenderMixin)render).getlastMovementFovMultiplier(), ((GameRenderMixin)render).getmovementFovMultiplier());
             }
 
             if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isDead()) {
@@ -26,7 +26,7 @@ public class DummyGameRender {
 
             CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
             if (cameraSubmersionType == CameraSubmersionType.LAVA || cameraSubmersionType == CameraSubmersionType.WATER) {
-                d *= (double)MathHelper.lerp(render.getClient().options.fovEffectScale, 1.0F, 0.85714287F);
+                d *= MathHelper.lerp(render.getClient().options.fovEffectScale, 1.0F, 0.85714287F);
             }
 
             return d;

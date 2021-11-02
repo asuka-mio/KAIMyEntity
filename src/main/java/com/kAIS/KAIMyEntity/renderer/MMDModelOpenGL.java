@@ -1,6 +1,5 @@
 package com.kAIS.KAIMyEntity.renderer;
 
-import com.kAIS.KAIMyEntity.KAIMyEntity;
 import com.kAIS.KAIMyEntity.KAIMyEntityClient;
 import com.kAIS.KAIMyEntity.NativeFunc;
 import com.kAIS.KAIMyEntity.dummy.DummyGameRender;
@@ -10,9 +9,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import org.lwjgl.opengl.*;
@@ -43,7 +39,7 @@ public class MMDModelOpenGL implements IMMDModel {
     static int modelViewLocation;
     static int samplerLocation;
 
-    static boolean isShaderInited;
+    static boolean isShaderInited = false;
 
     Material[] mats;
     MMDModelOpenGL() {
@@ -60,6 +56,7 @@ public class MMDModelOpenGL implements IMMDModel {
         projMatLocation = GL46C.glGetUniformLocation(shaderProgram,"ProjMat");
         modelViewLocation = GL46C.glGetUniformLocation(shaderProgram,"ModelViewMat");
         samplerLocation = GL46C.glGetUniformLocation(shaderProgram,"Sampler0");
+        isShaderInited = true;
     }
 
     public static MMDModelOpenGL Create(String modelFilename, String modelDir, boolean isPMD, long layerCount) {

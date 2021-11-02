@@ -31,7 +31,7 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 		super(ctx, model, shadowRadius);
 	}
 
-	@Inject(method = "render",at = @At("HEAD"))
+	@Inject(method = {"render"}, at = @At("HEAD"))
 	public void render(AbstractClientPlayerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider vertexConsumers, int packedLightIn, CallbackInfo ci) {
 		IMMDModel model = null;
 		MMDModelManager.Model m = MMDModelManager.GetPlayerModel("EntityPlayer_" + entityIn.getName().getString());
@@ -79,20 +79,14 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 						AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.SwingLeft, 1);
 					}
 				} else {
-					if (mwpd.playerData.stateLayers[1] != MMDModelManager.PlayerData.EntityState.Idle) {
-						mwpd.playerData.stateLayers[1] = MMDModelManager.PlayerData.EntityState.Idle;
-						model.ChangeAnim(0, 1);
-					}
+					AnimStateChangeOnce(mwpd,MMDModelManager.PlayerData.EntityState.Idle,1);
 				}
 
 				//Layer 2
 				if (entityIn.isSneaking()) {
 					AnimStateChangeOnce(mwpd, MMDModelManager.PlayerData.EntityState.Sneak, 2);
 				} else {
-					if (mwpd.playerData.stateLayers[2] != MMDModelManager.PlayerData.EntityState.Idle) {
-						mwpd.playerData.stateLayers[2] = MMDModelManager.PlayerData.EntityState.Idle;
-						model.ChangeAnim(0, 2);
-					}
+					AnimStateChangeOnce(mwpd,MMDModelManager.PlayerData.EntityState.Idle,2);
 				}
 			}
 

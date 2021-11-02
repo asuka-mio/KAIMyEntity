@@ -3,10 +3,9 @@
   "minVersion": "0.8",
   "package": "com.kAIS.KAIMyEntity.mixin",
   "compatibilityLevel": "JAVA_16",
-  "mixins": [
-    "GameRenderMixin"
-  ],
+  "mixins": [],
   "client": [
+    "GameRenderMixin",
     "KAIMyEntityPlayerRendererMixin"
   ],
   "injectors": {

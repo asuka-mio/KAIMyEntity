@@ -54,7 +54,7 @@ public class MMDModelManager {
     public static Model GetPlayerModel(String playerName){
         Model model = models.get(playerName);
         if (model == null) {
-            IMMDModel m = LoadModel(playerName,1);
+            IMMDModel m = LoadModel(playerName,3);
             if (m == null)
                 return null;
             MMDAnimManager.AddModel(m);
