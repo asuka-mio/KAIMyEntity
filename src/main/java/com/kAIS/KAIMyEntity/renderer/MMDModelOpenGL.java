@@ -72,31 +72,32 @@ public class MMDModelOpenGL implements IMMDModel {
             KAIMyEntityClient.logger.info(String.format("Cannot open model: '%s'.", modelFilename));
             return null;
         }
+        BufferRenderer.unbindAll();
+        //Model exists,now we prepare data for OpenGL
+        int vertexArrayObject = GL46C.glGenVertexArrays();
+        int indexBufferObject = GL46C.glGenBuffers();
+        int positionBufferObject = GL46C.glGenBuffers();
+        int normalBufferObject = GL46C.glGenBuffers();
+        int uvBufferObject = GL46C.glGenBuffers();
 
-        //Init vertex buffers
         int vertexCount = (int) nf.GetVertexCount(model);
         ByteBuffer posBuffer = ByteBuffer.allocateDirect(vertexCount * 12); //float * 3
         ByteBuffer norBuffer = ByteBuffer.allocateDirect(vertexCount * 12);
         ByteBuffer uvBuffer = ByteBuffer.allocateDirect(vertexCount * 8); //float * 2
 
-        //Init ibo
+        GL46C.glBindVertexArray(vertexArrayObject);
+        //Init indexBufferObject
         int indexElementSize = (int) nf.GetIndexElementSize(model);
         int indexCount = (int) nf.GetIndexCount(model);
         int indexSize = indexCount * indexElementSize;
         long indexData = nf.GetIndices(model);
-        int vao = GL46C.glGenVertexArrays();
-        BufferRenderer.unbindAll();
-        GL46C.glBindVertexArray(vao);
-        int ibo = GL46C.glGenBuffers();
-        int vbo = GL46C.glGenBuffers();
-        int nbo = GL46C.glGenBuffers();
-        int ubo = GL46C.glGenBuffers();
-        GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, ibo);
         ByteBuffer indexBuffer = ByteBuffer.allocateDirect(indexSize);
         for (int i = 0; i < indexSize; ++i)
             indexBuffer.put(nf.ReadByte(indexData, i));
         indexBuffer.position(0);
+        GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
         GL46C.glBufferData(GL46C.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL46C.GL_STATIC_DRAW);
+
         int indexType = switch (indexElementSize) {
             case 1 -> GL46C.GL_UNSIGNED_BYTE;
             case 2 -> GL46C.GL_UNSIGNED_SHORT;
@@ -125,11 +126,11 @@ public class MMDModelOpenGL implements IMMDModel {
         result.posBuffer = posBuffer;
         result.norBuffer = norBuffer;
         result.uvBuffer = uvBuffer;
-        result.indexBufferObject = ibo;
-        result.vertexBufferObject = vbo;
-        result.texcoordBufferObject = ubo;
-        result.normalBufferObject = nbo;
-        result.vertexArrayObject = vao;
+        result.indexBufferObject = indexBufferObject;
+        result.vertexBufferObject = positionBufferObject;
+        result.texcoordBufferObject = uvBufferObject;
+        result.normalBufferObject = normalBufferObject;
+        result.vertexArrayObject = vertexArrayObject;
         result.indexElementSize = indexElementSize;
         result.indexType = indexType;
         result.mats = mats;
@@ -194,7 +195,6 @@ public class MMDModelOpenGL implements IMMDModel {
         long posData = nf.GetPoss(model);
         nf.CopyDataToByteBuffer(posBuffer, posData, posAndNorSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER, vertexBufferObject);
-        posBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_STATIC_DRAW);
         GL46C.glVertexAttribPointer(positionLocation,3,GL46C.GL_FLOAT,false,0, 0);
 
@@ -203,12 +203,14 @@ public class MMDModelOpenGL implements IMMDModel {
         long uvData = nf.GetUVs(model);
         nf.CopyDataToByteBuffer(uvBuffer, uvData, uvSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER, texcoordBufferObject);
-        uvBuffer.position(0);
         GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_STATIC_DRAW);
         GL46C.glVertexAttribPointer(uvLocation,2,GL46C.GL_FLOAT,false,0, 0);
 
 
         GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
+        GL46C.glUseProgram(shaderProgram);
+        GL46C.glUniformMatrix4fv(modelViewLocation,false,modelViewMatBuff);
+        GL46C.glUniformMatrix4fv(projMatLocation,false,projViewMatBuff);
         long subMeshCount = nf.GetSubMeshCount(model);
         for (long i = 0; i < subMeshCount; ++i) {
             int materialID = nf.GetSubMeshMaterialID(model, i);
@@ -228,13 +230,10 @@ public class MMDModelOpenGL implements IMMDModel {
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
 
-            GL46C.glUseProgram(shaderProgram);
-            GL46C.glUniformMatrix4fv(modelViewLocation,false,modelViewMatBuff);
-            GL46C.glUniformMatrix4fv(projMatLocation,false,projViewMatBuff);
             GL46C.glUniform1i(samplerLocation,0);
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
-            GL46C.glUseProgram(0);
         }
+        GL46C.glUseProgram(0);
         BufferRenderer.unbindAll();
     }
 

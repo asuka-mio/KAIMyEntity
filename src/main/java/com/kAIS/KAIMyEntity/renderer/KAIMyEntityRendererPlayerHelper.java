@@ -12,8 +12,10 @@ public class KAIMyEntityRendererPlayerHelper {
             m = MMDModelManager.GetPlayerModel("EntityPlayer");
         if (m != null) {
             IMMDModel model = m.model;
+            ((MMDModelManager.ModelWithPlayerData)m).playerData.playCustomAnim = false;
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "idle"), 0);
-            ResetAnimationWithoutLayer0(model);
+            model.ChangeAnim(0, 1);
+            model.ChangeAnim(0, 2);
             model.ResetPhysics();
         }
     }
@@ -27,12 +29,8 @@ public class KAIMyEntityRendererPlayerHelper {
             IMMDModel model = m.model;
             mwpd.playerData.playCustomAnim = true;
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "custom_" + id), 0);
-            ResetAnimationWithoutLayer0(model);
+            model.ChangeAnim(0, 1);
+            model.ChangeAnim(0, 2);
         }
-    }
-
-    static void ResetAnimationWithoutLayer0(IMMDModel model) {
-        model.ChangeAnim(0, 1);
-        model.ChangeAnim(0, 2);
     }
 }
