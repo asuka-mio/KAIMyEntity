@@ -175,7 +175,7 @@ public class MMDModelOpenGL implements IMMDModel {
 
         deliverStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
         deliverStack.scale(0.09f,0.09f,0.09f);
-        shader.modelViewMat.set(deliverStack.peek().getModel());
+        shader.modelViewMat.set(deliverStack.peek().getPositionMatrix());
         FloatBuffer modelViewMatBuff = shader.modelViewMat.getFloatData();
         FloatBuffer projViewMatBuff = shader.projectionMat.getFloatData();
 
