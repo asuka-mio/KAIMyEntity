@@ -103,6 +103,7 @@ public abstract class KAIMyEntityPlayerRendererMixin extends LivingEntityRendere
 			MinecraftClient.getInstance().getItemRenderer().renderItem(entityIn,entityIn.getOffHandStack(),ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND,true,matrixStackIn,vertexConsumers,entityIn.world,packedLightIn,OverlayTexture.DEFAULT_UV,0);
 			matrixStackIn.pop();
 		}
+		ci.cancel();//Added By FMyuchuan.
 	}
 
 	void AnimStateChangeOnce(MMDModelManager.ModelWithPlayerData model, MMDModelManager.PlayerData.EntityState targetState, Integer layer) {
