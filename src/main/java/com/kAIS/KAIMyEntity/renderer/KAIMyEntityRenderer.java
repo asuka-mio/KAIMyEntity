@@ -20,7 +20,7 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
 
     @Override
     public boolean shouldRender(T livingEntityIn, Frustum camera, double camX, double camY, double camZ) {
-        return super.shouldRender(livingEntityIn,camera,camX,camY,camZ);
+        return super.shouldRender(livingEntityIn, camera, camX, camY, camZ);
     }
 
     @Override
@@ -36,8 +36,8 @@ public class KAIMyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
         } else {
             animName = "idle";
         }
-        MMDModelManager.Model model = MMDModelManager.GetNotPlayerModel(modelName,animName);
-        if(model != null) {
+        MMDModelManager.Model model = MMDModelManager.GetNotPlayerModel(modelName, animName);
+        if (model != null) {
             matrixStackIn.push();
             model.model.Render(entityYaw, matrixStackIn, packedLightIn);
             matrixStackIn.pop();

@@ -9,6 +9,7 @@ import java.util.Properties;
 public final class KAIMyEntityConfig {
     public static boolean openGLEnableLighting = true;
     public static int modelPoolMaxCount = 100;
+
     static {
         try (BufferedReader reader = Files.newBufferedReader(FabricLoader.getInstance().getConfigDir().resolve("KAIMyEntity.properties"))) {
             Properties properties = new Properties();

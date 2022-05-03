@@ -21,22 +21,35 @@ import java.io.File;
 public class KAIMyEntityRegisterClient {
     static KeyBinding keyResetPhysics = new KeyBinding("key.resetPhysics", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.title");
     static KeyBinding keyReloadModels = new KeyBinding("key.reloadModels", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_KP_1, "key.title");
-    static KeyBinding keyCustomAnim1 = new KeyBinding("key.customAnim1", InputUtil.Type.KEYSYM ,GLFW.GLFW_KEY_V, "key.title");
-    static KeyBinding keyCustomAnim2 = new KeyBinding("key.customAnim2", InputUtil.Type.KEYSYM , GLFW.GLFW_KEY_B, "key.title");
-    static KeyBinding keyCustomAnim3 = new KeyBinding("key.customAnim3", InputUtil.Type.KEYSYM , GLFW.GLFW_KEY_N, "key.title");
-    static KeyBinding keyCustomAnim4 = new KeyBinding("key.customAnim4", InputUtil.Type.KEYSYM , GLFW.GLFW_KEY_M, "key.title");
-    static KeyBinding[] keyBindings= new KeyBinding[] {keyCustomAnim1, keyCustomAnim2, keyCustomAnim3, keyCustomAnim4, keyReloadModels, keyResetPhysics};
+    static KeyBinding keyCustomAnim1 = new KeyBinding("key.customAnim1", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.title");
+    static KeyBinding keyCustomAnim2 = new KeyBinding("key.customAnim2", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, "key.title");
+    static KeyBinding keyCustomAnim3 = new KeyBinding("key.customAnim3", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "key.title");
+    static KeyBinding keyCustomAnim4 = new KeyBinding("key.customAnim4", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_M, "key.title");
+    static KeyBinding[] keyBindings = new KeyBinding[]{keyCustomAnim1, keyCustomAnim2, keyCustomAnim3, keyCustomAnim4, keyReloadModels, keyResetPhysics};
     static KeyBinding[] customKeyBindings = new KeyBinding[]{keyCustomAnim1, keyCustomAnim2, keyCustomAnim3, keyCustomAnim4};
+
     public static void Register() {
 
         for (KeyBinding i : keyBindings)
             KeyBindingHelper.registerKeyBinding(i);
-        for (int i=0;i<customKeyBindings.length;i++) {
+        for (int i = 0; i < customKeyBindings.length; i++) {
             int finalI = i;
-            ClientTickEvents.END_CLIENT_TICK.register(client -> {while(customKeyBindings[finalI].wasPressed()){onCustomKeyDown(finalI +1);}});
+            ClientTickEvents.END_CLIENT_TICK.register(client -> {
+                while (customKeyBindings[finalI].wasPressed()) {
+                    onCustomKeyDown(finalI + 1);
+                }
+            });
         }
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {while (keyReloadModels.wasPressed()){MMDModelManager.ReloadModel();}});
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {while (keyResetPhysics.wasPressed()){onKeyResetPhysicsDown();}});
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (keyReloadModels.wasPressed()) {
+                MMDModelManager.ReloadModel();
+            }
+        });
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (keyResetPhysics.wasPressed()) {
+                onKeyResetPhysicsDown();
+            }
+        });
 
         File[] modelDirs = new File(MinecraftClient.getInstance().runDirectory, "KAIMyEntity").listFiles();
         if (modelDirs != null) {
@@ -51,10 +64,12 @@ public class KAIMyEntityRegisterClient {
             }
         }
     }
-    public static void onKeyResetPhysicsDown(){
+
+    public static void onKeyResetPhysicsDown() {
         KAIMyEntityRendererPlayerHelper.ResetPhysics(MinecraftClient.getInstance().player);
     }
-    public static void onCustomKeyDown(Integer numOfKey){
+
+    public static void onCustomKeyDown(Integer numOfKey) {
         KAIMyEntityRendererPlayerHelper.CustomAnim(MinecraftClient.getInstance().player, numOfKey.toString());
     }
 }

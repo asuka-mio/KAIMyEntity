@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 public class KAIMyEntity implements ModInitializer {
     public static final Logger logger = LogManager.getLogger();
+
     @Override
     public void onInitialize() {
     }

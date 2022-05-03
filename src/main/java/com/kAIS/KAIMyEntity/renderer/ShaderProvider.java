@@ -3,24 +3,26 @@ package com.kAIS.KAIMyEntity.renderer;
 import com.kAIS.KAIMyEntity.KAIMyEntityClient;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.opengl.GL46C;
+
 import java.io.FileInputStream;
 
 public class ShaderProvider {
     private static boolean isInited = false;
     private static int program = 0;
-    private static String vertexPath = MinecraftClient.getInstance().runDirectory.getAbsolutePath()+"/KAIMyEntity/Shader/MMDShader.vsh";
-    private static String fragPath = MinecraftClient.getInstance().runDirectory.getAbsolutePath()+"/KAIMyEntity/Shader/MMDShader.fsh";
-    public static void Init(){
-        if(!isInited){
+    private static final String vertexPath = MinecraftClient.getInstance().runDirectory.getAbsolutePath() + "/KAIMyEntity/Shader/MMDShader.vsh";
+    private static final String fragPath = MinecraftClient.getInstance().runDirectory.getAbsolutePath() + "/KAIMyEntity/Shader/MMDShader.fsh";
+
+    public static void Init() {
+        if (!isInited) {
             try {
                 int vertexShader = GL46C.glCreateShader(GL46C.GL_VERTEX_SHADER);
-                try(FileInputStream vertexSource = new FileInputStream(vertexPath)){
-                    GL46C.glShaderSource(vertexShader,new String(vertexSource.readAllBytes()));
+                try (FileInputStream vertexSource = new FileInputStream(vertexPath)) {
+                    GL46C.glShaderSource(vertexShader, new String(vertexSource.readAllBytes()));
                 }
 
                 int fragShader = GL46C.glCreateShader(GL46C.GL_FRAGMENT_SHADER);
-                try(FileInputStream fragSource = new FileInputStream(fragPath)){
-                    GL46C.glShaderSource(fragShader,new String(fragSource.readAllBytes()));
+                try (FileInputStream fragSource = new FileInputStream(fragPath)) {
+                    GL46C.glShaderSource(fragShader, new String(fragSource.readAllBytes()));
                 }
 
                 GL46C.glCompileShader(vertexShader);
@@ -37,8 +39,8 @@ public class ShaderProvider {
                     GL46C.glDeleteShader(fragShader);
                 }
                 program = GL46C.glCreateProgram();
-                GL46C.glAttachShader(program,vertexShader);
-                GL46C.glAttachShader(program,fragShader);
+                GL46C.glAttachShader(program, vertexShader);
+                GL46C.glAttachShader(program, fragShader);
                 GL46C.glLinkProgram(program);
                 if (GL46C.glGetProgrami(program, GL46C.GL_LINK_STATUS) == GL46C.GL_FALSE) {
                     String log = GL46C.glGetProgramInfoLog(program, 8192);
@@ -53,8 +55,9 @@ public class ShaderProvider {
             isInited = true;
         }
     }
-    public static int getProgram(){
-        if(program <= 0)
+
+    public static int getProgram() {
+        if (program <= 0)
             throw new Error("Call Shader before init");
         return program;
     }

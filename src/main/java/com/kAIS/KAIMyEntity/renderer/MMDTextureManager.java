@@ -47,7 +47,7 @@ public class MMDTextureManager {
             GL46C.glTexParameteri(GL46C.GL_TEXTURE_2D, GL46C.GL_TEXTURE_MAX_LEVEL, 0);
             GL46C.glTexParameteri(GL46C.GL_TEXTURE_2D, GL46C.GL_TEXTURE_MIN_FILTER, GL46C.GL_LINEAR);
             GL46C.glTexParameteri(GL46C.GL_TEXTURE_2D, GL46C.GL_TEXTURE_MAG_FILTER, GL46C.GL_LINEAR);
-            GL46C.glBindTexture(GL46C.GL_TEXTURE_2D,0);
+            GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, 0);
 
             result = new Texture();
             result.tex = tex;
