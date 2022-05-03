@@ -14,12 +14,14 @@ public class ShaderProvider {
         if(!isInited){
             try {
                 int vertexShader = GL46C.glCreateShader(GL46C.GL_VERTEX_SHADER);
-                FileInputStream vertexSource = new FileInputStream(vertexPath);
-                GL46C.glShaderSource(vertexShader,new String(vertexSource.readAllBytes()));
+                try(FileInputStream vertexSource = new FileInputStream(vertexPath)){
+                    GL46C.glShaderSource(vertexShader,new String(vertexSource.readAllBytes()));
+                }
 
                 int fragShader = GL46C.glCreateShader(GL46C.GL_FRAGMENT_SHADER);
-                FileInputStream fragSource = new FileInputStream(fragPath);
-                GL46C.glShaderSource(fragShader,new String(fragSource.readAllBytes()));
+                try(FileInputStream fragSource = new FileInputStream(fragPath)){
+                    GL46C.glShaderSource(fragShader,new String(fragSource.readAllBytes()));
+                }
 
                 GL46C.glCompileShader(vertexShader);
                 if (GL46C.glGetShaderi(vertexShader, GL46C.GL_COMPILE_STATUS) == GL46C.GL_FALSE) {
