@@ -5,7 +5,8 @@ import net.minecraft.client.MinecraftClient;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MMDModelManager {
     static Map<String, Model> models;
@@ -38,27 +39,28 @@ public class MMDModelManager {
     }
 
     public static Model GetNotPlayerModel(String entityName, String animPlaying) {
-        Model model = models.get(entityName+animPlaying);
+        Model model = models.get(entityName + animPlaying);
         if (model == null) {
-            IMMDModel m = LoadModel(entityName,1);
+            IMMDModel m = LoadModel(entityName, 1);
             if (m == null)
                 return null;
             MMDAnimManager.AddModel(m);
-            AddModel(entityName+animPlaying, m,entityName,false);
-            model = models.get(entityName+animPlaying);
-            model.model.ChangeAnim(MMDAnimManager.GetAnimModel(model.model,animPlaying),0);
+            AddModel(entityName + animPlaying, m, entityName, false);
+            model = models.get(entityName + animPlaying);
+            model.model.ChangeAnim(MMDAnimManager.GetAnimModel(model.model, animPlaying), 0);
         }
         return model;
 
     }
-    public static Model GetPlayerModel(String playerName){
+
+    public static Model GetPlayerModel(String playerName) {
         Model model = models.get(playerName);
         if (model == null) {
-            IMMDModel m = LoadModel(playerName,3);
+            IMMDModel m = LoadModel(playerName, 3);
             if (m == null)
                 return null;
             MMDAnimManager.AddModel(m);
-            AddModel(playerName, m, playerName,true);
+            AddModel(playerName, m, playerName, true);
             model = models.get(playerName);
         }
         return model;
@@ -82,7 +84,7 @@ public class MMDModelManager {
             m.playerData = pd;
             model.ResetPhysics();
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "idle"), 0);
-            models.put(Name,m);
+            models.put(Name, m);
         } else {
             ModelWithEntityState m = new ModelWithEntityState();
             m.entityName = Name;
@@ -91,7 +93,7 @@ public class MMDModelManager {
             m.state = MMDModelManager.EntityState.Idle;
             model.ResetPhysics();
             model.ChangeAnim(MMDAnimManager.GetAnimModel(model, "idle"), 0);
-            models.put(Name,m);
+            models.put(Name, m);
         }
     }
 
@@ -109,12 +111,14 @@ public class MMDModelManager {
     }
 
     enum EntityState {Idle, Walk, Swim, Ridden}
+
     static class ModelWithEntityState extends Model {
         EntityState state;
     }
+
     public static class Model {
-        String entityName;
         public IMMDModel model;
+        String entityName;
         String modelName;
     }
 
@@ -123,9 +127,6 @@ public class MMDModelManager {
     }
 
     public static class PlayerData {
-        public boolean playCustomAnim; //Custom animation played in layer 0.
-        public long rightHandMat, leftHandMat;
-        ByteBuffer matBuffer;
         public static HashMap<EntityState, String> stateProperty = new HashMap<>() {{
             put(EntityState.Idle, "idle");
             put(EntityState.Walk, "walk");
@@ -141,7 +142,10 @@ public class MMDModelManager {
             put(EntityState.SwingLeft, "swingLeft");
             put(EntityState.Sneak, "sneak");
         }};
+        public boolean playCustomAnim; //Custom animation played in layer 0.
+        public long rightHandMat, leftHandMat;
         public EntityState[] stateLayers;
+        ByteBuffer matBuffer;
 
         public enum EntityState {Idle, Walk, Sprint, Air, OnLadder, Swim, Ride, Sleep, ElytraFly, Die, SwingRight, SwingLeft, ItemRight, ItemLeft, Sneak}
     }

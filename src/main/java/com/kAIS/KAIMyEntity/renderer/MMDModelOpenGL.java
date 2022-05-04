@@ -5,60 +5,58 @@ import com.kAIS.KAIMyEntity.NativeFunc;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Shader;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3f;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL46C;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 public class MMDModelOpenGL implements IMMDModel {
     static NativeFunc nf;
-    long model;
-    String modelDir;
-    int vertexCount;
-    ByteBuffer posBuffer, norBuffer, uvBuffer;
-
-    int vertexArrayObject;
-    int indexBufferObject;
-    int vertexBufferObject;
-    int normalBufferObject;
-    int texcoordBufferObject;
-
-    int indexElementSize;
-    int indexType;
-
     static int shaderProgram;
     static int positionLocation;
     static int uvLocation;
     static int projMatLocation;
     static int modelViewLocation;
     static int samplerLocation;
-
     static boolean isShaderInited = false;
-
+    long model;
+    String modelDir;
+    int vertexCount;
+    ByteBuffer posBuffer, norBuffer, uvBuffer;
+    int vertexArrayObject;
+    int indexBufferObject;
+    int vertexBufferObject;
+    int normalBufferObject;
+    int texcoordBufferObject;
+    int indexElementSize;
+    int indexType;
     Material[] mats;
+
     MMDModelOpenGL() {
 
     }
-    public static void InitShader(){
+
+    public static void InitShader() {
         //Init Shader
         ShaderProvider.Init();
         shaderProgram = ShaderProvider.getProgram();
 
         //Init ShaderPropLocation
-        positionLocation = GL46C.glGetAttribLocation(shaderProgram,"Position");
-        uvLocation = GL46C.glGetAttribLocation(shaderProgram,"UV0");
-        projMatLocation = GL46C.glGetUniformLocation(shaderProgram,"ProjMat");
-        modelViewLocation = GL46C.glGetUniformLocation(shaderProgram,"ModelViewMat");
-        samplerLocation = GL46C.glGetUniformLocation(shaderProgram,"Sampler0");
+        positionLocation = GL46C.glGetAttribLocation(shaderProgram, "Position");
+        uvLocation = GL46C.glGetAttribLocation(shaderProgram, "UV0");
+        projMatLocation = GL46C.glGetUniformLocation(shaderProgram, "ProjMat");
+        modelViewLocation = GL46C.glGetUniformLocation(shaderProgram, "ModelViewMat");
+        samplerLocation = GL46C.glGetUniformLocation(shaderProgram, "Sampler0");
         isShaderInited = true;
     }
 
     public static MMDModelOpenGL Create(String modelFilename, String modelDir, boolean isPMD, long layerCount) {
-        if(!isShaderInited)
+        if (!isShaderInited)
             InitShader();
         if (nf == null) nf = NativeFunc.GetInst();
         long model;
@@ -164,7 +162,7 @@ public class MMDModelOpenGL implements IMMDModel {
         nf.UpdateModel(model);
     }
 
-    void RenderModel(float entityYaw, MatrixStack deliverStack ) {
+    void RenderModel(float entityYaw, MatrixStack deliverStack) {
         Shader shader = RenderSystem.getShader();
 
         BufferRenderer.unbindAll();
@@ -174,7 +172,7 @@ public class MMDModelOpenGL implements IMMDModel {
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
         deliverStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-entityYaw));
-        deliverStack.scale(0.09f,0.09f,0.09f);
+        deliverStack.scale(0.09f, 0.09f, 0.09f);
         shader.modelViewMat.set(deliverStack.peek().getPositionMatrix());
         FloatBuffer modelViewMatBuff = shader.modelViewMat.getFloatData();
         FloatBuffer projViewMatBuff = shader.projectionMat.getFloatData();
@@ -188,22 +186,22 @@ public class MMDModelOpenGL implements IMMDModel {
         long posData = nf.GetPoss(model);
         nf.CopyDataToByteBuffer(posBuffer, posData, posAndNorSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER, vertexBufferObject);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,posBuffer,GL46C.GL_STATIC_DRAW);
-        GL46C.glVertexAttribPointer(positionLocation,3,GL46C.GL_FLOAT,false,0, 0);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER, posBuffer, GL46C.GL_STATIC_DRAW);
+        GL46C.glVertexAttribPointer(positionLocation, 3, GL46C.GL_FLOAT, false, 0, 0);
 
 
         int uvSize = vertexCount * 8; //float * 2
         long uvData = nf.GetUVs(model);
         nf.CopyDataToByteBuffer(uvBuffer, uvData, uvSize);
         GL46C.glBindBuffer(GL46C.GL_ARRAY_BUFFER, texcoordBufferObject);
-        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER,uvBuffer,GL46C.GL_STATIC_DRAW);
-        GL46C.glVertexAttribPointer(uvLocation,2,GL46C.GL_FLOAT,false,0, 0);
+        GL46C.glBufferData(GL46C.GL_ARRAY_BUFFER, uvBuffer, GL46C.GL_STATIC_DRAW);
+        GL46C.glVertexAttribPointer(uvLocation, 2, GL46C.GL_FLOAT, false, 0, 0);
 
 
         GL46C.glBindBuffer(GL46C.GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
         GL46C.glUseProgram(shaderProgram);
-        GL46C.glUniformMatrix4fv(modelViewLocation,false,modelViewMatBuff);
-        GL46C.glUniformMatrix4fv(projMatLocation,false,projViewMatBuff);
+        GL46C.glUniformMatrix4fv(modelViewLocation, false, modelViewMatBuff);
+        GL46C.glUniformMatrix4fv(projMatLocation, false, projViewMatBuff);
         long subMeshCount = nf.GetSubMeshCount(model);
         for (long i = 0; i < subMeshCount; ++i) {
             int materialID = nf.GetSubMeshMaterialID(model, i);
@@ -219,11 +217,11 @@ public class MMDModelOpenGL implements IMMDModel {
             if (mats[materialID].tex == 0)
                 MinecraftClient.getInstance().getEntityRenderDispatcher().textureManager.bindTexture(TextureManager.MISSING_IDENTIFIER);
             else
-                GL46C.glBindTexture(GL46C.GL_TEXTURE_2D,mats[materialID].tex);
+                GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, mats[materialID].tex);
             long startPos = (long) nf.GetSubMeshBeginIndex(model, i) * indexElementSize;
             int count = nf.GetSubMeshVertexCount(model, i);
 
-            GL46C.glUniform1i(samplerLocation,0);
+            GL46C.glUniform1i(samplerLocation, 0);
             GL46C.glDrawElements(GL46C.GL_TRIANGLES, count, indexType, startPos);
         }
         GL46C.glUseProgram(0);

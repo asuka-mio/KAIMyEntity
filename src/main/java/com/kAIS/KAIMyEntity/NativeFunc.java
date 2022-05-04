@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class NativeFunc {
-    static NativeFunc inst;
     private static final String RuntimePath = new File(System.getProperty("java.home")).getParent();
     private static final boolean isAndroid = new File("/system/build.prop").exists();
     private static final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
@@ -21,6 +20,7 @@ public class NativeFunc {
             put(runtimeUrlRes.android_arch64_libc, "https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/libc++_shared.so");
         }
     };
+    static NativeFunc inst;
 
     public static NativeFunc GetInst() {
         if (inst == null) {
