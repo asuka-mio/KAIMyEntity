@@ -1,6 +1,6 @@
 # KAIMyEntity for fabric 1.17.x
 已达到可用状态
-![Screenshot_20211209_012535](https://user-images.githubusercontent.com/43900799/145254834-43536052-aead-4540-9c55-783903edbeff.png)
+![实现截图](/images/ScreenShot1.png)
 
 ## 使用帮助
 需要自定义的着色器
