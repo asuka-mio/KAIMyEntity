@@ -7,9 +7,9 @@
 
 ## 使用帮助
 
-需要自定义的着色器
+本项目需要自定义着色器才能工作
 
-你需要把release里的两个glsl着色器放到KAIMyEntity里的Shader文件夹里
+作为缺省，你可以下载同release里的两个glsl着色器，放到KAIMyEntity中的Shader文件夹
 
 
 ## 待实现
